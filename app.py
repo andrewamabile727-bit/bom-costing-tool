@@ -2,9 +2,10 @@ import streamlit as st
 import pandas as pd
 import re
 
-st.set_page_config(page_title="BOM Costing Tool v4.3", layout="wide")
+st.set_page_config(page_title="BOM Tool v4.5", layout="wide")
 
-MASTER_FILE = "Item_Master_v4_Template.csv"
+# BACK TO YOUR ORIGINAL FILENAME
+MASTER_FILE = "Item_Master_v4_Template.csv" 
 LINKS_FILE = "BOM_Links_v4_Template.csv"
 
 def clean_currency(value):
@@ -39,36 +40,39 @@ try:
         if p not in parent_map: parent_map[p] = []
         parent_map[p].append((c, q))
 
-    # Identify Structural Roots (Top Level SKUs)
+    # Identify all Roots (Top-Level SKUs)
     all_parents = set(df_links['Parent Part'].unique())
     all_children = set(df_links['Child Part'].unique())
-    # Roots are parents that are NEVER children
     root_ids = sorted(list(all_parents - all_children))
 
     # --- DROPDOWN PREPARATION ---
-    # Create labels like "02017-01 | Description Name"
     sku_options = []
     for rid in root_ids:
-        desc = item_details.get(rid, {}).get('Part Description', "Description Not Found")
+        # Fetch description from Master
+        desc = item_details.get(rid, {}).get('Part Description', "⚠️ NOT IN MASTER")
         sku_options.append(f"{rid} | {desc}")
 
     # --- UI SELECTION ---
     st.sidebar.header("Navigation")
-    search_query = st.sidebar.text_input("Search SKUs", "")
+    search_query = st.sidebar.text_input("Search SKU or Name", "")
     if search_query:
         sku_options = [opt for opt in sku_options if search_query.upper() in opt.upper()]
 
-    selected_label = st.selectbox(f"Select Saleable SKU ({len(sku_options)} Roots Found)", ["-- Select --"] + sku_options)
+    selected_label = st.selectbox(f"Select Saleable SKU ({len(sku_options)} Found)", ["-- Select --"] + sku_options)
 
     if selected_label != "-- Select --":
-        # Extract Part No from selection
         selected_sku = selected_label.split(" | ")[0].strip()
         selected_desc = item_details.get(selected_sku, {}).get('Part Description', "N/A")
 
         # --- HEADER ---
         st.markdown("---")
-        st.subheader(f"Top-Level SKU: **{selected_sku}**")
-        st.write(f"**Description:** {selected_desc}")
+        st.header(f"BOM Breakdown: {selected_sku}")
+        st.subheader(f"Description: {selected_desc}")
+        
+        # Check if user needs to update the master
+        if "TBD" in selected_desc:
+            st.warning("ℹ️ Note: This SKU's description and cost are currently placeholders in your Item Master file.")
+        
         st.markdown("---")
 
         # --- WATERFALL CALCULATION ---
@@ -81,6 +85,7 @@ try:
                 
                 waterfall.append({
                     'Level': f"{'  ' * depth}↳ {child}",
+                    'Part No.': child,
                     'Description': det.get('Part Description', 'N/A'),
                     'Category': det.get('Category', 'N/A'),
                     'Qty Per': qty,
@@ -109,7 +114,7 @@ try:
             csv = df_wf.to_csv(index=False).encode('utf-8')
             st.download_button(f"Export {selected_sku} BOM", csv, f"BOM_{selected_sku}.csv", "text/csv")
         else:
-            st.warning("⚠️ This SKU is a root but has no children defined in the Links file.")
+            st.warning("⚠️ This SKU has no children defined in the Links file.")
 
 except Exception as e:
     st.error(f"System Error: {e}")
