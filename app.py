@@ -2,55 +2,69 @@ import streamlit as st
 import pandas as pd
 import re
 
-st.set_page_config(page_title="BOM Costing Tool v4", layout="wide")
+st.set_page_config(page_title="BOM Tool v4.1", layout="wide")
 
-# EXACT filenames from your GitHub
 MASTER_FILE = "Item_Master_v4_Template.csv"
 LINKS_FILE = "BOM_Links_v4_Template.csv"
 
 def clean_currency(value):
-    """Handles '$', spaces, and commas in currency strings."""
     if pd.isna(value) or value == "": return 0.0
     if isinstance(value, str):
-        # Remove everything except numbers and decimals
         cleaned = re.sub(r'[^\d.]', '', value)
         return float(cleaned) if cleaned else 0.0
     return float(value)
 
-st.title("Interactive Waterfall BOM & Costing")
-st.info("System Status: Reading Version 4.0 Data Sheets")
+st.title("📦 Interactive Waterfall BOM & Costing")
 
-# --- LOAD DATA ---
 try:
-    # Use utf-8-sig to handle hidden Excel formatting characters
+    # --- LOAD DATA ---
     df_master = pd.read_csv(MASTER_FILE, encoding='utf-8-sig')
     df_links = pd.read_csv(LINKS_FILE, encoding='utf-8-sig')
     
-    # 1. Clean Master Data
+    # --- CLEANING ---
     df_master['Part No.'] = df_master['Part No.'].astype(str).str.strip()
     df_master['Unit Cost'] = df_master['Unit Cost'].apply(clean_currency)
     item_details = df_master.set_index('Part No.').to_dict('index')
 
-    # 2. Clean Links Data (Keeping only first 3 columns to ignore the 'Unnamed' ones)
     df_links = df_links.iloc[:, :3] 
     df_links.columns = ['Parent Part', 'Child Part', 'Qty Per']
     df_links['Parent Part'] = df_links['Parent Part'].astype(str).str.strip()
     df_links['Child Part'] = df_links['Child Part'].astype(str).str.strip()
     df_links['Qty Per'] = pd.to_numeric(df_links['Qty Per'], errors='coerce').fillna(1.0)
 
-    # 3. Build Parent Map
+    # --- HIERARCHY LOGIC ---
     parent_map = {}
     for _, row in df_links.iterrows():
         p, c, q = row['Parent Part'], row['Child Part'], row['Qty Per']
         if p not in parent_map: parent_map[p] = []
         parent_map[p].append((c, q))
 
-    # 4. Identify Top-Level SKUs
     all_parents = set(df_links['Parent Part'].unique())
     all_children = set(df_links['Child Part'].unique())
-    l0_skus = sorted(list(all_parents - all_children))
+    
+    # POTENTIAL L0s: Parents that are never children
+    potential_l0s = all_parents - all_children
+    
+    # REFINED L0s: Must be in Item Master AND marked as "Make"
+    # This removes hardware or raw materials that might be "dangling"
+    final_l0_list = [
+        sku for sku in potential_l0s 
+        if item_details.get(sku, {}).get('Make/Buy') == 'Make'
+    ]
+    final_l0_list = sorted(final_l0_list)
 
-    selected_l0 = st.selectbox("Select Saleable SKU (L0)", ["-- Select --"] + l0_skus)
+    # --- SIDEBAR FILTERS ---
+    st.sidebar.header("Filter Settings")
+    only_make = st.sidebar.checkbox("Show 'Make' Items Only (L0 focus)", value=True)
+    search_query = st.sidebar.text_input("Search Part Number", "")
+
+    # Apply Sidebar Filters to the List
+    display_list = final_l0_list if only_make else sorted(list(potential_l0s))
+    if search_query:
+        display_list = [item for item in display_list if search_query.upper() in item.upper()]
+
+    # --- SELECTION ---
+    selected_l0 = st.selectbox(f"Select Saleable SKU ({len(display_list)} found)", ["-- Select --"] + display_list)
 
     if selected_l0 != "-- Select --":
         waterfall = []
@@ -59,30 +73,28 @@ try:
                 total_qty = mult * qty
                 det = item_details.get(child, {})
                 u_cost = det.get('Unit Cost', 0.0)
-                ext_cost = u_cost * total_qty
-                
                 waterfall.append({
                     'Level': f"{'  ' * depth}↳ {child}",
                     'Description': det.get('Part Description', 'N/A'),
-                    'Category': det.get('Category', 'N/A'),
+                    'Make/Buy': det.get('Make/Buy', 'N/A'),
                     'Qty Per': qty,
                     'Total Req.': total_qty,
                     'Unit Cost': f"${u_cost:,.2f}",
-                    'Ext. Cost': ext_cost
+                    'Ext. Cost': u_cost * total_qty
                 })
                 explode(child, depth + 1, total_qty)
 
         explode(selected_l0)
         df_wf = pd.DataFrame(waterfall)
         
-        # Display Totals
-        st.metric("Total Roll-up Cost", f"${df_wf['Ext. Cost'].sum():,.2f}")
+        # Display Results
+        c1, c2 = st.columns(2)
+        c1.metric("Total Roll-up Cost", f"${df_wf['Ext. Cost'].sum():,.2f}")
+        c2.metric("Component Count", f"{int(df_wf['Total Req.'].sum())}")
         
-        # Format for Display
         df_display = df_wf.copy()
         df_display['Ext. Cost'] = df_display['Ext. Cost'].apply(lambda x: f"${x:,.2f}")
         st.dataframe(df_display, use_container_width=True, hide_index=True)
 
 except Exception as e:
-    st.error(f"Error Loading Data: {e}")
-    st.warning("Ensure filenames on GitHub match EXACTLY: Item_Master_v4_Template.csv and BOM_Links_v4_Template.csv")
+    st.error(f"Error: {e}")
