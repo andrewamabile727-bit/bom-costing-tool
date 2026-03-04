@@ -3,7 +3,7 @@ import pandas as pd
 import re
 import os
 
-st.set_page_config(page_title="BOM Tool v6.6", layout="wide")
+st.set_page_config(page_title="BOM Tool v6.7", layout="wide")
 
 # --- 1. FILENAME CONFIGURATION ---
 SKU_FILE = "L0&L1 Skus..xlsx - Sheet1.csv" 
@@ -33,14 +33,19 @@ try:
     df_links = super_clean_df(pd.read_csv(LINKS_FILE, encoding='utf-8-sig'))
     df_sku_list = super_clean_df(pd.read_csv(SKU_FILE, encoding='utf-8-sig'))
 
-    # Process Master Data (Details)
-    # Expected: Part No., Description, Make/Buy, Category, Unit Cost
+    # Clean Costs
     df_master['Unit Cost'] = df_master['Unit Cost'].apply(clean_currency)
+    
+    # NEW: Ensure columns exist in Master to avoid errors if they haven't been added yet
+    for col in ['Fulfillment', 'Supplier']:
+        if col not in df_master.columns:
+            df_master[col] = ""
+
     item_details = df_master.set_index('Part No.').to_dict('index')
 
     # Process Links Data (Structure)
-    # Expected: Parent, Child, Qty, UOM, Fulfillment, Supplier
-    df_links.columns = ['Parent Part', 'Child Part', 'Qty Per', 'UOM', 'Fulfillment', 'Supplier'] + list(df_links.columns[6:])
+    # Expected: Parent, Child, Qty, UOM
+    df_links.columns = ['Parent Part', 'Child Part', 'Qty Per', 'UOM'] + list(df_links.columns[4:])
     
     parent_map = {}
     for _, row in df_links.iterrows():
@@ -49,9 +54,7 @@ try:
         parent_map[p].append({
             'child': str(row['Child Part']),
             'qty': pd.to_numeric(row['Qty Per'], errors='coerce') or 1.0,
-            'uom': str(row['UOM']) if pd.notna(row['UOM']) else "Ea.",
-            'fulfillment': str(row['Fulfillment']) if pd.notna(row['Fulfillment']) else "",
-            'supplier': str(row['Supplier']) if pd.notna(row['Supplier']) else ""
+            'uom': str(row['UOM']) if pd.notna(row['UOM']) else "Ea."
         })
 
     # --- 4. UI SIDEBAR ---
@@ -89,8 +92,8 @@ try:
                     'Description': det.get('Part Description', 'N/A'),
                     'Category': det.get('Category', 'N/A'),
                     'Make/Buy': det.get('Make/Buy', 'N/A'),
-                    'Fulfillment': item['fulfillment'],
-                    'Supplier': item['supplier'],
+                    'Fulfillment': det.get('Fulfillment', ''), # Now from Item Master
+                    'Supplier': det.get('Supplier', ''),       # Now from Item Master
                     'Qty Per': item['qty'],
                     'UOM': item['uom'],
                     'Total Req.': total_qty,
@@ -114,7 +117,6 @@ try:
             st.dataframe(df_disp, use_container_width=True, hide_index=True)
             
             # --- 6. EXPORT ---
-            # Exporting exactly the columns requested
             export_cols = ['BOM Level', 'Parent', 'Part No.', 'Description', 'Category', 'Make/Buy', 'Fulfillment', 'Supplier', 'Qty Per', 'UOM', 'Total Req.', 'Unit Cost', 'Ext. Cost']
             csv_data = df_wf[export_cols].to_csv(index=False).encode('utf-8-sig')
             st.download_button(label="📥 Download Extended BOM CSV", data=csv_data, file_name=f"Extended_BOM_{selected_sku}.csv", mime="text/csv")
