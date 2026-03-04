@@ -1,15 +1,16 @@
 import streamlit as st
 import pandas as pd
 import re
-import altair as alt
 import os
 
-st.set_page_config(page_title="BOM Tool v6.0", layout="wide")
+# v6.1 - Graphs Removed / Focus on Data Table & Metrics
+st.set_page_config(page_title="BOM Tool v6.1", layout="wide")
 
 # --- 1. FILENAME CONFIGURATION ---
+# These match your GitHub folder exactly
 SKU_FILE = "L0&L1 Skus..xlsx - Sheet1.csv" 
 MASTER_FILE = "Item_Master_v4_Template.csv" 
-LINKS_FILE = "BOM_Links_v4_Template.csv" # Ensure this file is uploaded!
+LINKS_FILE = "BOM_Links_v4_Template.csv"
 
 def clean_currency(value):
     if pd.isna(value) or value == "": return 0.0
@@ -19,6 +20,7 @@ def clean_currency(value):
     return float(value)
 
 def super_clean_df(df):
+    """Removes hidden spaces in headers and cell values"""
     df.columns = [" ".join(str(c).split()) for c in df.columns]
     df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
     return df
@@ -31,7 +33,7 @@ for f in [SKU_FILE, MASTER_FILE, LINKS_FILE]:
 
 if missing_files:
     st.error(f"🚨 Missing Files: {', '.join(missing_files)}")
-    st.info("Please ensure all 3 CSV files are uploaded to the same folder as this app.")
+    st.info("Please ensure all 3 CSV files are uploaded to the same folder on GitHub.")
     st.stop()
 
 try:
@@ -40,13 +42,16 @@ try:
     df_links = super_clean_df(pd.read_csv(LINKS_FILE, encoding='utf-8-sig'))
     df_sku_list = super_clean_df(pd.read_csv(SKU_FILE, encoding='utf-8-sig'))
 
+    # Clean Costs
     df_master['Unit Cost'] = df_master['Unit Cost'].apply(clean_currency)
     df_master['Category'] = df_master['Category'].fillna('Uncategorized')
     item_details = df_master.set_index('Part No.').to_dict('index')
 
+    # Standardize Links Columns
     df_links.columns = ['Parent Part', 'Child Part', 'Qty Per'] + list(df_links.columns[3:])
     df_links['Qty Per'] = pd.to_numeric(df_links['Qty Per'], errors='coerce').fillna(1.0)
 
+    # Build Parent-Child Map
     parent_map = {}
     for _, row in df_links.iterrows():
         p, c, q = str(row['Parent Part']), str(row['Child Part']), row['Qty Per']
@@ -73,6 +78,7 @@ try:
     
     sku_options = []
     if id_col in df_sku_list.columns:
+        # Get unique IDs for the dropdown
         unique_rows = df_sku_list.drop_duplicates(subset=[id_col])
         for _, row in unique_rows.iterrows():
             p_id = str(row[id_col])
@@ -117,35 +123,28 @@ try:
             m1, m2, m3 = st.columns(3)
             m1.metric("Total Roll-up Cost", f"${total_val:,.2f}")
             m2.metric("Total Parts Count", int(df_wf['Total Req.'].sum()))
-            m3.metric("Unique Items", len(df_wf))
+            m3.metric("Unique Line Items", len(df_wf))
 
-            # --- 7. VISUAL ANALYTICS ---
-            if total_val > 0:
-                c1, c2 = st.columns(2)
-                with c1:
-                    st.write("### 📊 Spend by Category")
-                    df_cat = df_wf.groupby('Category')['Ext. Cost'].sum().reset_index()
-                    chart1 = alt.Chart(df_cat).mark_arc(innerRadius=50).encode(
-                        theta="Ext. Cost:Q", color="Category:N", tooltip=['Category', alt.Tooltip('Ext. Cost', format="$,.2f")]
-                    ).properties(height=300)
-                    st.altair_chart(chart1, use_container_width=True)
-                with c2:
-                    st.write("### 📈 Top 10 Cost Drivers")
-                    df_dr = df_wf.groupby(['Part No.', 'Description'])['Ext. Cost'].sum().reset_index().nlargest(10, 'Ext. Cost')
-                    chart2 = alt.Chart(df_dr).mark_bar().encode(
-                        x=alt.X('Ext. Cost:Q', title="Total Cost"),
-                        y=alt.Y('Part No.:N', sort='-x'),
-                        tooltip=['Description', alt.Tooltip('Ext. Cost', format="$,.2f")]
-                    ).properties(height=300)
-                    st.altair_chart(chart2, use_container_width=True)
-            else:
-                st.info("💡 No cost data available to graph. Total cost is $0.00.")
-
-            # --- 8. DATA TABLE ---
+            # --- 7. DATA TABLE (REPLACES CHARTS) ---
             st.write("### 📑 Detailed Component List")
-            st.dataframe(df_wf, use_container_width=True, hide_index=True)
+            
+            # Format numbers for display
+            df_display = df_wf.copy()
+            df_display['Unit Cost'] = df_display['Unit Cost'].apply(lambda x: f"${x:,.2f}")
+            df_display['Ext. Cost'] = df_display['Ext. Cost'].apply(lambda x: f"${x:,.2f}")
+            
+            st.dataframe(df_display, use_container_width=True, hide_index=True)
+            
+            # --- 8. EXPORT ---
+            csv_data = df_wf.to_csv(index=False).encode('utf-8')
+            st.download_button(
+                label=f"📥 Download {selected_sku} BOM", 
+                data=csv_data, 
+                file_name=f"BOM_{selected_sku}.csv", 
+                mime="text/csv"
+            )
         else:
-            st.warning("⚠️ No components found. Is the Part Number in the BOM Links file exactly the same?")
+            st.warning("⚠️ No components found. Please check if this ID exists in the 'Parent Part' column of your BOM Links file.")
 
 except Exception as e:
     st.error(f"Critical Error: {e}")
