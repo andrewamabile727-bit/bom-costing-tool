@@ -3,11 +3,9 @@ import pandas as pd
 import re
 import os
 
-# v6.1 - Graphs Removed / Focus on Data Table & Metrics
-st.set_page_config(page_title="BOM Tool v6.1", layout="wide")
+st.set_page_config(page_title="BOM Tool v6.2", layout="wide")
 
 # --- 1. FILENAME CONFIGURATION ---
-# These match your GitHub folder exactly
 SKU_FILE = "L0&L1 Skus..xlsx - Sheet1.csv" 
 MASTER_FILE = "Item_Master_v4_Template.csv" 
 LINKS_FILE = "BOM_Links_v4_Template.csv"
@@ -20,7 +18,6 @@ def clean_currency(value):
     return float(value)
 
 def super_clean_df(df):
-    """Removes hidden spaces in headers and cell values"""
     df.columns = [" ".join(str(c).split()) for c in df.columns]
     df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
     return df
@@ -33,7 +30,6 @@ for f in [SKU_FILE, MASTER_FILE, LINKS_FILE]:
 
 if missing_files:
     st.error(f"🚨 Missing Files: {', '.join(missing_files)}")
-    st.info("Please ensure all 3 CSV files are uploaded to the same folder on GitHub.")
     st.stop()
 
 try:
@@ -42,16 +38,12 @@ try:
     df_links = super_clean_df(pd.read_csv(LINKS_FILE, encoding='utf-8-sig'))
     df_sku_list = super_clean_df(pd.read_csv(SKU_FILE, encoding='utf-8-sig'))
 
-    # Clean Costs
     df_master['Unit Cost'] = df_master['Unit Cost'].apply(clean_currency)
-    df_master['Category'] = df_master['Category'].fillna('Uncategorized')
     item_details = df_master.set_index('Part No.').to_dict('index')
 
-    # Standardize Links Columns
     df_links.columns = ['Parent Part', 'Child Part', 'Qty Per'] + list(df_links.columns[3:])
     df_links['Qty Per'] = pd.to_numeric(df_links['Qty Per'], errors='coerce').fillna(1.0)
 
-    # Build Parent-Child Map
     parent_map = {}
     for _, row in df_links.iterrows():
         p, c, q = str(row['Parent Part']), str(row['Child Part']), row['Qty Per']
@@ -75,18 +67,15 @@ try:
     }
 
     id_col, desc_col = mapping[ui_option]
-    
     sku_options = []
     if id_col in df_sku_list.columns:
-        # Get unique IDs for the dropdown
         unique_rows = df_sku_list.drop_duplicates(subset=[id_col])
         for _, row in unique_rows.iterrows():
-            p_id = str(row[id_col])
-            p_desc = str(row[desc_col])
+            p_id, p_desc = str(row[id_col]), str(row[desc_col])
             if p_id and p_id.lower() != "nan":
                 sku_options.append(f"{p_id} | {p_desc}")
 
-    selected_label = st.selectbox(f"Select from {ui_option}", ["-- Select --"] + sorted(sku_options))
+    selected_label = st.selectbox(f"Select {ui_option}", ["-- Select --"] + sorted(sku_options))
 
     if selected_label != "-- Select --":
         selected_sku = selected_label.split(" | ")[0].strip()
@@ -102,8 +91,8 @@ try:
                 det = item_details.get(child, {})
                 u_cost = det.get('Unit Cost', 0.0)
                 waterfall.append({
-                    'Level': f"{'..' * depth}↳ {child}",
-                    'Part No.': child,
+                    'Hierarchy': f"{'..' * depth}↳", # Purely visual
+                    'Part No.': child,               # CLEAN for CSV/Excel
                     'Description': det.get('Part Description', 'N/A'),
                     'Category': det.get('Category', 'Uncategorized'),
                     'Qty Per': qty,
@@ -125,26 +114,27 @@ try:
             m2.metric("Total Parts Count", int(df_wf['Total Req.'].sum()))
             m3.metric("Unique Line Items", len(df_wf))
 
-            # --- 7. DATA TABLE (REPLACES CHARTS) ---
+            # --- 7. DATA TABLE ---
             st.write("### 📑 Detailed Component List")
             
-            # Format numbers for display
+            # Create a display version for the UI with formatted currency
             df_display = df_wf.copy()
             df_display['Unit Cost'] = df_display['Unit Cost'].apply(lambda x: f"${x:,.2f}")
             df_display['Ext. Cost'] = df_display['Ext. Cost'].apply(lambda x: f"${x:,.2f}")
             
             st.dataframe(df_display, use_container_width=True, hide_index=True)
             
-            # --- 8. EXPORT ---
-            csv_data = df_wf.to_csv(index=False).encode('utf-8')
+            # --- 8. CLEAN EXPORT (Removes the Hierarchy arrows) ---
+            df_export = df_wf.drop(columns=['Hierarchy'])
+            csv_data = df_export.to_csv(index=False).encode('utf-8')
             st.download_button(
-                label=f"📥 Download {selected_sku} BOM", 
+                label=f"📥 Download Clean CSV for {selected_sku}", 
                 data=csv_data, 
                 file_name=f"BOM_{selected_sku}.csv", 
                 mime="text/csv"
             )
         else:
-            st.warning("⚠️ No components found. Please check if this ID exists in the 'Parent Part' column of your BOM Links file.")
+            st.warning("⚠️ No components found. Check if the ID matches the BOM Links file.")
 
 except Exception as e:
     st.error(f"Critical Error: {e}")
