@@ -3,7 +3,7 @@ import pandas as pd
 import re
 import os
 
-st.set_page_config(page_title="BOM Tool v6.3", layout="wide")
+st.set_page_config(page_title="BOM Tool v6.4", layout="wide")
 
 # --- 1. FILENAME CONFIGURATION ---
 SKU_FILE = "L0&L1 Skus..xlsx - Sheet1.csv" 
@@ -18,6 +18,7 @@ def clean_currency(value):
     return float(value)
 
 def super_clean_df(df):
+    """Removes hidden spaces in headers and cell values"""
     df.columns = [" ".join(str(c).split()) for c in df.columns]
     df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
     return df
@@ -38,17 +39,22 @@ try:
     df_links = super_clean_df(pd.read_csv(LINKS_FILE, encoding='utf-8-sig'))
     df_sku_list = super_clean_df(pd.read_csv(SKU_FILE, encoding='utf-8-sig'))
 
+    # Clean Costs & Categories
     df_master['Unit Cost'] = df_master['Unit Cost'].apply(clean_currency)
     item_details = df_master.set_index('Part No.').to_dict('index')
 
-    df_links.columns = ['Parent Part', 'Child Part', 'Qty Per'] + list(df_links.columns[3:])
+    # Assign names to columns based on position
+    # Col 0: Parent, Col 1: Child, Col 2: Qty, Col 3: UOM
+    df_links.columns = ['Parent Part', 'Child Part', 'Qty Per', 'UOM'] + list(df_links.columns[4:])
     df_links['Qty Per'] = pd.to_numeric(df_links['Qty Per'], errors='coerce').fillna(1.0)
+    df_links['UOM'] = df_links['UOM'].fillna('Ea.')
 
+    # Build Parent-Child Map (including UOM)
     parent_map = {}
     for _, row in df_links.iterrows():
-        p, c, q = str(row['Parent Part']), str(row['Child Part']), row['Qty Per']
+        p, c, q, uom = str(row['Parent Part']), str(row['Child Part']), row['Qty Per'], str(row['UOM'])
         if p not in parent_map: parent_map[p] = []
-        parent_map[p].append((c, q))
+        parent_map[p].append((c, q, uom))
 
     # --- 4. UI SIDEBAR ---
     st.sidebar.header("Navigation")
@@ -86,7 +92,7 @@ try:
         # --- 5. BOM EXPLOSION ---
         waterfall = []
         def explode(parent, depth=0, mult=1):
-            for child, qty in parent_map.get(parent, []):
+            for child, qty, uom in parent_map.get(parent, []):
                 total_qty = mult * qty
                 det = item_details.get(child, {})
                 u_cost = det.get('Unit Cost', 0.0)
@@ -96,6 +102,7 @@ try:
                     'Description': det.get('Part Description', 'N/A'),
                     'Category': det.get('Category', 'Uncategorized'),
                     'Qty Per': qty,
+                    'UOM': uom,
                     'Total Req.': total_qty,
                     'Unit Cost': u_cost, 
                     'Ext. Cost': u_cost * total_qty
@@ -121,13 +128,9 @@ try:
             df_display['Ext. Cost'] = df_display['Ext. Cost'].apply(lambda x: f"${x:,.2f}")
             st.dataframe(df_display, use_container_width=True, hide_index=True)
             
-            # --- 8. CLEAN EXPORT FIX ---
+            # --- 8. CLEAN EXPORT ---
             df_export = df_wf.drop(columns=['Hierarchy'])
-            
-            # Use 'utf-8-sig' for the export. This adds a BOM (Byte Order Mark) 
-            # which tells Excel specifically how to open the file correctly.
             csv_data = df_export.to_csv(index=False).encode('utf-8-sig')
-            
             st.download_button(
                 label=f"📥 Download Clean CSV for {selected_sku}", 
                 data=csv_data, 
@@ -135,7 +138,7 @@ try:
                 mime="text/csv"
             )
         else:
-            st.warning("⚠️ No components found. Check if the ID matches the BOM Links file.")
+            st.warning("⚠️ No components found for this ID.")
 
 except Exception as e:
     st.error(f"Critical Error: {e}")
