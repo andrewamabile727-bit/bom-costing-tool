@@ -3,7 +3,7 @@ import pandas as pd
 import re
 import os
 
-st.set_page_config(page_title="BOM Tool v6.7", layout="wide")
+st.set_page_config(page_title="BOM Tool v6.8", layout="wide")
 
 # --- 1. FILENAME CONFIGURATION ---
 SKU_FILE = "L0&L1 Skus..xlsx - Sheet1.csv" 
@@ -33,18 +33,15 @@ try:
     df_links = super_clean_df(pd.read_csv(LINKS_FILE, encoding='utf-8-sig'))
     df_sku_list = super_clean_df(pd.read_csv(SKU_FILE, encoding='utf-8-sig'))
 
-    # Clean Costs
+    # Clean Costs & Ensure Procurement columns exist
     df_master['Unit Cost'] = df_master['Unit Cost'].apply(clean_currency)
-    
-    # NEW: Ensure columns exist in Master to avoid errors if they haven't been added yet
     for col in ['Fulfillment', 'Supplier']:
         if col not in df_master.columns:
             df_master[col] = ""
 
     item_details = df_master.set_index('Part No.').to_dict('index')
 
-    # Process Links Data (Structure)
-    # Expected: Parent, Child, Qty, UOM
+    # Process Links Data
     df_links.columns = ['Parent Part', 'Child Part', 'Qty Per', 'UOM'] + list(df_links.columns[4:])
     
     parent_map = {}
@@ -74,7 +71,9 @@ try:
     selected_label = st.selectbox(f"Select {ui_option}", ["-- Select --"] + sorted(sku_options))
 
     if selected_label != "-- Select --":
-        selected_sku = selected_label.split(" | ")[0].strip()
+        parts = selected_label.split(" | ")
+        selected_sku = parts[0].strip()
+        selected_desc = parts[1].strip() if len(parts) > 1 else "N/A"
         
         # --- 5. BOM EXPLOSION ---
         waterfall = []
@@ -92,8 +91,8 @@ try:
                     'Description': det.get('Part Description', 'N/A'),
                     'Category': det.get('Category', 'N/A'),
                     'Make/Buy': det.get('Make/Buy', 'N/A'),
-                    'Fulfillment': det.get('Fulfillment', ''), # Now from Item Master
-                    'Supplier': det.get('Supplier', ''),       # Now from Item Master
+                    'Fulfillment': det.get('Fulfillment', ''),
+                    'Supplier': det.get('Supplier', ''),
                     'Qty Per': item['qty'],
                     'UOM': item['uom'],
                     'Total Req.': total_qty,
@@ -116,10 +115,27 @@ try:
             df_disp['Ext. Cost'] = df_disp['Ext. Cost'].apply(lambda x: f"${x:,.2f}")
             st.dataframe(df_disp, use_container_width=True, hide_index=True)
             
-            # --- 6. EXPORT ---
+            # --- 6. EXPORT WITH HEADER ROWS ---
             export_cols = ['BOM Level', 'Parent', 'Part No.', 'Description', 'Category', 'Make/Buy', 'Fulfillment', 'Supplier', 'Qty Per', 'UOM', 'Total Req.', 'Unit Cost', 'Ext. Cost']
-            csv_data = df_wf[export_cols].to_csv(index=False).encode('utf-8-sig')
-            st.download_button(label="📥 Download Extended BOM CSV", data=csv_data, file_name=f"Extended_BOM_{selected_sku}.csv", mime="text/csv")
+            
+            # Construct the CSV as a string first
+            header_str = f"Assembly Number:, {selected_sku}\n"
+            header_str += f"Description:, {selected_desc}\n\n"
+            
+            table_str = df_wf[export_cols].to_csv(index=False)
+            full_csv_str = header_str + table_str
+            
+            # Encode with utf-8-sig so Excel handles the comma-separated metadata correctly
+            csv_data = full_csv_str.encode('utf-8-sig')
+            
+            st.download_button(
+                label="📥 Download Extended BOM with Header", 
+                data=csv_data, 
+                file_name=f"BOM_Export_{selected_sku}.csv", 
+                mime="text/csv"
+            )
+        else:
+            st.warning("⚠️ No components found for this selection.")
 
 except Exception as e:
     st.error(f"Error: {e}")
