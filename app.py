@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import re
 
-st.set_page_config(page_title="BOM Tool v5.2", layout="wide")
+st.set_page_config(page_title="BOM Tool v5.3", layout="wide")
 
 # --- FILE CONFIGURATION ---
 SKU_FILE = "SKU_Mapping.csv"
@@ -17,17 +17,16 @@ def clean_currency(value):
     return float(value)
 
 try:
-    # --- LOAD DATA ---
+    # --- 1. DATA LOADING ---
     df_master = pd.read_csv(MASTER_FILE, encoding='utf-8-sig')
     df_links = pd.read_csv(LINKS_FILE, encoding='utf-8-sig')
     df_sku_list = pd.read_csv(SKU_FILE, encoding='utf-8-sig')
 
-    # --- CLEAN MAPPING HEADERS ---
+    # --- 2. CLEANING & HEADER FIXES ---
     df_sku_list.columns = [c.strip() for c in df_sku_list.columns]
-    # Standardize the Cladding header to fix the double-space bug
+    # Standardize Cladding header specifically to handle the "double space" bug
     df_sku_list.rename(columns={'Cladding Assy Kit  Description': 'Cladding Assy Kit Description'}, inplace=True)
 
-    # --- CLEAN MASTER & LINKS ---
     df_master['Part No.'] = df_master['Part No.'].astype(str).str.strip()
     df_master['Unit Cost'] = df_master['Unit Cost'].apply(clean_currency)
     item_details = df_master.set_index('Part No.').to_dict('index')
@@ -37,15 +36,15 @@ try:
     df_links['Child Part'] = df_links['Child Part'].astype(str).str.strip()
     df_links['Qty Per'] = pd.to_numeric(df_links['Qty Per'], errors='coerce').fillna(1.0)
 
-    # --- BUILD HIERARCHY MAP ---
+    # Build Hierarchy Map
     parent_map = {}
     for _, row in df_links.iterrows():
         p, c, q = row['Parent Part'], row['Child Part'], row['Qty Per']
         if p not in parent_map: parent_map[p] = []
         parent_map[p].append((c, q))
 
-    # --- UI SIDEBAR ---
-    st.sidebar.header("Select UI Option")
+    # --- 3. UI SIDEBAR ---
+    st.sidebar.header("Navigation")
     ui_option = st.sidebar.radio(
         "Choose Assembly Category:",
         ["Option 1: Saleable SKUs (0 Prefix)", "Option 2: Base Assemblies", 
@@ -77,13 +76,12 @@ try:
         selected_sku = selected_label.split(" | ")[0].strip()
         selected_name = selected_label.split(" | ")[1].strip()
 
-        # --- HEADER DISPLAY ---
         st.markdown("---")
         st.header(f"BOM Breakdown: {selected_sku}")
         st.subheader(f"Description: {selected_name}")
         st.markdown("---")
 
-        # --- EXPLODE BOM ---
+        # --- 4. BOM EXPLOSION (RECURSIVE) ---
         waterfall = []
         def explode(parent, depth=0, mult=1):
             for child, qty in parent_map.get(parent, []):
@@ -106,18 +104,24 @@ try:
         if waterfall:
             df_wf = pd.DataFrame(waterfall)
             
-            # Summary Metrics
-            m1, m2 = st.columns(2)
+            # --- 5. UPDATED METRICS (FIXED COUNT) ---
+            m1, m2, m3 = st.columns(3)
             total_cost = df_wf['Ext. Cost'].sum()
+            
             m1.metric("Total Roll-up Cost", f"${total_cost:,.2f}")
-            m2.metric("Total Components", f"{int(df_wf['Total Req.'].sum())}")
+            
+            # "Total Parts" counts every single screw/tube (e.g. 12)
+            m2.metric("Total Parts Count", int(df_wf['Total Req.'].sum()))
+            
+            # "Unique Line Items" counts the rows in the table (e.g. 5)
+            m3.metric("Unique Line Items", len(df_wf))
 
-            # Data Table
+            # Display Table
             df_display = df_wf.copy()
             df_display['Ext. Cost'] = df_display['Ext. Cost'].apply(lambda x: f"${x:,.2f}")
             st.dataframe(df_display, use_container_width=True, hide_index=True)
             
-            # --- RESTORED DOWNLOAD BUTTON ---
+            # --- 6. EXPORT FEATURE ---
             csv_data = df_wf.to_csv(index=False).encode('utf-8')
             st.download_button(
                 label=f"📥 Download {selected_sku} BOM as CSV",
