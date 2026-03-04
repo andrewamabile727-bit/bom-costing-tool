@@ -3,7 +3,7 @@ import pandas as pd
 import re
 import os
 
-st.set_page_config(page_title="BOM Tool v6.4", layout="wide")
+st.set_page_config(page_title="BOM Tool v6.5", layout="wide")
 
 # --- 1. FILENAME CONFIGURATION ---
 SKU_FILE = "L0&L1 Skus..xlsx - Sheet1.csv" 
@@ -39,17 +39,16 @@ try:
     df_links = super_clean_df(pd.read_csv(LINKS_FILE, encoding='utf-8-sig'))
     df_sku_list = super_clean_df(pd.read_csv(SKU_FILE, encoding='utf-8-sig'))
 
-    # Clean Costs & Categories
+    # Clean Costs
     df_master['Unit Cost'] = df_master['Unit Cost'].apply(clean_currency)
     item_details = df_master.set_index('Part No.').to_dict('index')
 
     # Assign names to columns based on position
-    # Col 0: Parent, Col 1: Child, Col 2: Qty, Col 3: UOM
     df_links.columns = ['Parent Part', 'Child Part', 'Qty Per', 'UOM'] + list(df_links.columns[4:])
     df_links['Qty Per'] = pd.to_numeric(df_links['Qty Per'], errors='coerce').fillna(1.0)
     df_links['UOM'] = df_links['UOM'].fillna('Ea.')
 
-    # Build Parent-Child Map (including UOM)
+    # Build Parent-Child Map
     parent_map = {}
     for _, row in df_links.iterrows():
         p, c, q, uom = str(row['Parent Part']), str(row['Child Part']), row['Qty Per'], str(row['UOM'])
@@ -96,9 +95,16 @@ try:
                 total_qty = mult * qty
                 det = item_details.get(child, {})
                 u_cost = det.get('Unit Cost', 0.0)
+                
+                # --- DOT INDENTATION LOGIC ---
+                # Level 1 = .
+                # Level 2 = ..
+                # Level 3 = ...
+                dot_level = "." * (depth + 1)
+                
                 waterfall.append({
-                    'Hierarchy': f"{'..' * depth}↳", 
-                    'Part No.': child,               
+                    'Level': dot_level,            # The visual dots
+                    'Part No.': child,             # Clean for searching/exporting
                     'Description': det.get('Part Description', 'N/A'),
                     'Category': det.get('Category', 'Uncategorized'),
                     'Qty Per': qty,
@@ -126,19 +132,23 @@ try:
             df_display = df_wf.copy()
             df_display['Unit Cost'] = df_display['Unit Cost'].apply(lambda x: f"${x:,.2f}")
             df_display['Ext. Cost'] = df_display['Ext. Cost'].apply(lambda x: f"${x:,.2f}")
+            
+            # Format the display so Level and Part No. are side-by-side
             st.dataframe(df_display, use_container_width=True, hide_index=True)
             
             # --- 8. CLEAN EXPORT ---
-            df_export = df_wf.drop(columns=['Hierarchy'])
-            csv_data = df_export.to_csv(index=False).encode('utf-8-sig')
+            # We keep the dots in the CSV as it is helpful for hierarchy, 
+            # but Part No. remains a clean ID for Excel VLOOKUPs.
+            csv_data = df_wf.to_csv(index=False).encode('utf-8-sig')
+            
             st.download_button(
-                label=f"📥 Download Clean CSV for {selected_sku}", 
+                label=f"📥 Download Dot-Indented BOM for {selected_sku}", 
                 data=csv_data, 
                 file_name=f"BOM_{selected_sku}.csv", 
                 mime="text/csv"
             )
         else:
-            st.warning("⚠️ No components found for this ID.")
+            st.warning("⚠️ No components found for this selection.")
 
 except Exception as e:
     st.error(f"Critical Error: {e}")
