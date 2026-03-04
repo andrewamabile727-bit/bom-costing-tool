@@ -7,7 +7,7 @@ st.set_page_config(page_title="BOM Tool v5.7", layout="wide")
 
 # --- FILE CONFIGURATION ---
 # Ensure these match your EXACT filenames on GitHub
-SKU_FILE = "L0&L1 Skus..xlsx - Sheet1.csv" 
+SKU_FILE = "SKU_Mapping.csv" 
 MASTER_FILE = "Item_Master_v4_Template.csv" 
 LINKS_FILE = "BOM_Links_v4_Template.csv" # Double check if this is v4 or another name
 
