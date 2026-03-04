@@ -3,16 +3,18 @@ import pandas as pd
 import re
 import altair as alt
 
-st.set_page_config(page_title="BOM Tool v5.6", layout="wide")
+st.set_page_config(page_title="BOM Tool v5.7", layout="wide")
 
 # --- FILE CONFIGURATION ---
-SKU_FILE = "SKU_Mapping.csv"
+# Ensure these match your EXACT filenames on GitHub
+SKU_FILE = "L0&L1 Skus..xlsx - Sheet1.csv" 
 MASTER_FILE = "Item_Master_v4_Template.csv" 
-LINKS_FILE = "BOM_Links_v4_Template.csv"
+LINKS_FILE = "BOM_Links_v4_Template.csv" # Double check if this is v4 or another name
 
 def clean_currency(value):
     if pd.isna(value) or value == "": return 0.0
     if isinstance(value, str):
+        # Removes $, commas, and whitespace
         cleaned = re.sub(r'[^\d.]', '', value)
         return float(cleaned) if cleaned else 0.0
     return float(value)
@@ -20,16 +22,17 @@ def clean_currency(value):
 try:
     # --- 1. DATA LOADING ---
     df_master = pd.read_csv(MASTER_FILE, encoding='utf-8-sig')
+    # If your links file has a different name, the app will error here
     df_links = pd.read_csv(LINKS_FILE, encoding='utf-8-sig')
     df_sku_list = pd.read_csv(SKU_FILE, encoding='utf-8-sig')
 
     # --- 2. CLEANING ---
     df_sku_list.columns = [c.strip() for c in df_sku_list.columns]
+    # This handles the specific double-space bug in your spreadsheet headers
     df_sku_list.rename(columns={'Cladding Assy Kit  Description': 'Cladding Assy Kit Description'}, inplace=True)
 
     df_master['Part No.'] = df_master['Part No.'].astype(str).str.strip()
     df_master['Unit Cost'] = df_master['Unit Cost'].apply(clean_currency)
-    # CRITICAL: Fill empty categories so the Pie Chart doesn't break
     df_master['Category'] = df_master['Category'].fillna('Uncategorized')
     item_details = df_master.set_index('Part No.').to_dict('index')
 
@@ -79,7 +82,6 @@ try:
         st.markdown("---")
         st.header(f"BOM Breakdown: {selected_sku}")
         st.subheader(f"Description: {selected_name}")
-        st.markdown("---")
 
         # --- 4. BOM EXPLOSION ---
         waterfall = []
@@ -108,7 +110,7 @@ try:
             # --- 5. METRICS ---
             m1, m2, m3 = st.columns(3)
             total_cost = df_wf['Ext. Cost'].sum()
-            m1.metric("Total Roll-up Cost", f"${total_cost:,.2f}")
+            m1.metric("Total Roll-up Cost", f"${total_cost:,.4f}") # 4 decimals to show tiny test costs
             m2.metric("Total Parts Count", int(df_wf['Total Req.'].sum()))
             m3.metric("Unique Line Items", len(df_wf))
 
@@ -118,46 +120,48 @@ try:
             with col_chart1:
                 st.write("### 📊 Spend by Category")
                 df_cat = df_wf.groupby('Category')['Ext. Cost'].sum().reset_index()
-                # Only show if there is a cost > 0
-                df_cat = df_cat[df_cat['Ext. Cost'] > 0]
+                # Lowering threshold so $0.0001 shows up
+                df_cat = df_cat[df_cat['Ext. Cost'] > 0.0000001]
                 
                 if not df_cat.empty:
                     pie = alt.Chart(df_cat).mark_arc(innerRadius=60).encode(
                         theta=alt.Theta(field="Ext. Cost", type="quantitative"),
                         color=alt.Color(field="Category", type="nominal", scale=alt.Scale(scheme='tableau10')),
-                        tooltip=['Category', alt.Tooltip('Ext. Cost', format="$,.2f")]
+                        tooltip=['Category', alt.Tooltip('Ext. Cost', format="$,.4f")]
                     ).properties(height=350)
                     st.altair_chart(pie, use_container_width=True)
                 else:
-                    st.info("⚠️ No cost data found for category chart.")
+                    st.info("⚠️ Cost too low to visualize ($0). Add Unit Costs to Item Master.")
 
             with col_chart2:
                 st.write("### 📈 Top 10 Cost Drivers")
                 df_drivers = df_wf.groupby(['Part No.', 'Description'])['Ext. Cost'].sum().reset_index()
                 df_drivers = df_drivers.sort_values(by='Ext. Cost', ascending=False).head(10)
-                df_drivers = df_drivers[df_drivers['Ext. Cost'] > 0]
+                df_drivers = df_drivers[df_drivers['Ext. Cost'] > 0.0000001]
 
                 if not df_drivers.empty:
                     bar = alt.Chart(df_drivers).mark_bar().encode(
-                        x=alt.X('Ext. Cost:Q', title="Total Cost", axis=alt.Axis(format="$,.0f")),
+                        x=alt.X('Ext. Cost:Q', title="Total Cost"),
                         y=alt.Y('Part No.:N', sort='-x', title="Part No"),
                         color=alt.value("#1f77b4"),
-                        tooltip=['Part No.', 'Description', alt.Tooltip('Ext. Cost', format="$,.2f")]
+                        tooltip=['Part No.', 'Description', alt.Tooltip('Ext. Cost', format="$,.4f")]
                     ).properties(height=350)
                     st.altair_chart(bar, use_container_width=True)
                 else:
-                    st.info("⚠️ No cost data found for drivers chart.")
+                    st.info("⚠️ Cost too low to visualize ($0).")
 
             # --- 7. DATA TABLE ---
             st.write("### 📑 Detailed Component List")
             df_display = df_wf.copy()
-            df_display['Unit Cost'] = df_display['Unit Cost'].apply(lambda x: f"${x:,.2f}")
-            df_display['Ext. Cost'] = df_display['Ext. Cost'].apply(lambda x: f"${x:,.2f}")
+            df_display['Unit Cost'] = df_display['Unit Cost'].apply(lambda x: f"${x:,.4f}")
+            df_display['Ext. Cost'] = df_display['Ext. Cost'].apply(lambda x: f"${x:,.4f}")
             st.dataframe(df_display, use_container_width=True, hide_index=True)
             
             # --- 8. EXPORT ---
             csv_data = df_wf.to_csv(index=False).encode('utf-8')
             st.download_button(label=f"📥 Download {selected_sku} BOM", data=csv_data, file_name=f"BOM_{selected_sku}.csv", mime="text/csv")
+        else:
+            st.warning("⚠️ No components found. Check your BOM_Links file for Parent Part matches.")
 
 except Exception as e:
     st.error(f"Error: {e}")
