@@ -3,7 +3,7 @@ import pandas as pd
 import re
 import os
 
-st.set_page_config(page_title="BOM Tool v6.2", layout="wide")
+st.set_page_config(page_title="BOM Tool v6.3", layout="wide")
 
 # --- 1. FILENAME CONFIGURATION ---
 SKU_FILE = "L0&L1 Skus..xlsx - Sheet1.csv" 
@@ -91,8 +91,8 @@ try:
                 det = item_details.get(child, {})
                 u_cost = det.get('Unit Cost', 0.0)
                 waterfall.append({
-                    'Hierarchy': f"{'..' * depth}↳", # Purely visual
-                    'Part No.': child,               # CLEAN for CSV/Excel
+                    'Hierarchy': f"{'..' * depth}↳", 
+                    'Part No.': child,               
                     'Description': det.get('Part Description', 'N/A'),
                     'Category': det.get('Category', 'Uncategorized'),
                     'Qty Per': qty,
@@ -116,17 +116,18 @@ try:
 
             # --- 7. DATA TABLE ---
             st.write("### 📑 Detailed Component List")
-            
-            # Create a display version for the UI with formatted currency
             df_display = df_wf.copy()
             df_display['Unit Cost'] = df_display['Unit Cost'].apply(lambda x: f"${x:,.2f}")
             df_display['Ext. Cost'] = df_display['Ext. Cost'].apply(lambda x: f"${x:,.2f}")
-            
             st.dataframe(df_display, use_container_width=True, hide_index=True)
             
-            # --- 8. CLEAN EXPORT (Removes the Hierarchy arrows) ---
+            # --- 8. CLEAN EXPORT FIX ---
             df_export = df_wf.drop(columns=['Hierarchy'])
-            csv_data = df_export.to_csv(index=False).encode('utf-8')
+            
+            # Use 'utf-8-sig' for the export. This adds a BOM (Byte Order Mark) 
+            # which tells Excel specifically how to open the file correctly.
+            csv_data = df_export.to_csv(index=False).encode('utf-8-sig')
+            
             st.download_button(
                 label=f"📥 Download Clean CSV for {selected_sku}", 
                 data=csv_data, 
