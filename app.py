@@ -1,8 +1,9 @@
 import streamlit as st
 import pandas as pd
 import re
+import altair as alt
 
-st.set_page_config(page_title="BOM Tool v5.3", layout="wide")
+st.set_page_config(page_title="BOM Tool v5.5", layout="wide")
 
 # --- FILE CONFIGURATION ---
 SKU_FILE = "SKU_Mapping.csv"
@@ -22,9 +23,8 @@ try:
     df_links = pd.read_csv(LINKS_FILE, encoding='utf-8-sig')
     df_sku_list = pd.read_csv(SKU_FILE, encoding='utf-8-sig')
 
-    # --- 2. CLEANING & HEADER FIXES ---
+    # --- 2. CLEANING ---
     df_sku_list.columns = [c.strip() for c in df_sku_list.columns]
-    # Standardize Cladding header specifically to handle the "double space" bug
     df_sku_list.rename(columns={'Cladding Assy Kit  Description': 'Cladding Assy Kit Description'}, inplace=True)
 
     df_master['Part No.'] = df_master['Part No.'].astype(str).str.strip()
@@ -61,7 +61,6 @@ try:
 
     id_col, desc_col = mapping[ui_option]
     
-    # Generate Dropdown Options
     sku_options = []
     unique_rows = df_sku_list.drop_duplicates(subset=[id_col])
     for _, row in unique_rows.iterrows():
@@ -81,7 +80,7 @@ try:
         st.subheader(f"Description: {selected_name}")
         st.markdown("---")
 
-        # --- 4. BOM EXPLOSION (RECURSIVE) ---
+        # --- 4. BOM EXPLOSION ---
         waterfall = []
         def explode(parent, depth=0, mult=1):
             for child, qty in parent_map.get(parent, []):
@@ -92,9 +91,10 @@ try:
                     'Level': f"{'..' * depth}↳ {child}",
                     'Part No.': child,
                     'Description': det.get('Part Description', 'N/A'),
+                    'Category': det.get('Category', 'Uncategorized'),
                     'Qty Per': qty,
                     'Total Req.': total_qty,
-                    'Unit Cost': f"${u_cost:,.2f}",
+                    'Unit Cost': u_cost, 
                     'Ext. Cost': u_cost * total_qty
                 })
                 explode(child, depth + 1, total_qty)
@@ -104,33 +104,65 @@ try:
         if waterfall:
             df_wf = pd.DataFrame(waterfall)
             
-            # --- 5. UPDATED METRICS (FIXED COUNT) ---
+            # --- 5. METRICS ---
             m1, m2, m3 = st.columns(3)
             total_cost = df_wf['Ext. Cost'].sum()
-            
             m1.metric("Total Roll-up Cost", f"${total_cost:,.2f}")
-            
-            # "Total Parts" counts every single screw/tube (e.g. 12)
             m2.metric("Total Parts Count", int(df_wf['Total Req.'].sum()))
-            
-            # "Unique Line Items" counts the rows in the table (e.g. 5)
             m3.metric("Unique Line Items", len(df_wf))
 
-            # Display Table
+            # --- 6. VISUAL ANALYTICS ---
+            col_chart1, col_chart2 = st.columns(2)
+
+            with col_chart1:
+                st.write("### 📊 Spend by Category")
+                df_cat = df_wf.groupby('Category')['Ext. Cost'].sum().reset_index()
+                df_cat = df_cat[df_cat['Ext. Cost'] > 0]
+                
+                if not df_cat.empty:
+                    pie = alt.Chart(df_cat).mark_arc(innerRadius=60).encode(
+                        theta=alt.Theta(field="Ext. Cost", type="quantitative"),
+                        color=alt.Color(field="Category", type="nominal", legend=alt.Legend(title="Category")),
+                        tooltip=[alt.Tooltip('Category'), alt.Tooltip('Ext. Cost', format="$,.2f")]
+                    ).properties(height=350)
+                    st.altair_chart(pie, use_container_width=True)
+                else:
+                    st.info("No cost data for category visualization.")
+
+            with col_chart2:
+                st.write("### 📈 Top 10 Cost Drivers")
+                # Group by Part No + Description to get the top drivers
+                df_drivers = df_wf.groupby(['Part No.', 'Description'])['Ext. Cost'].sum().reset_index()
+                df_drivers = df_drivers.sort_values(by='Ext. Cost', ascending=False).head(10)
+                df_drivers = df_drivers[df_drivers['Ext. Cost'] > 0]
+
+                if not df_drivers.empty:
+                    bar = alt.Chart(df_drivers).mark_bar(color='#1f77b4').encode(
+                        x=alt.X('Ext. Cost:Q', axis=alt.Axis(format="$,.0f"), title="Total Extended Cost"),
+                        y=alt.Y('Part No.:N', sort='-x', title="Part Number"),
+                        tooltip=['Part No.', 'Description', alt.Tooltip('Ext. Cost', format="$,.2f")]
+                    ).properties(height=350)
+                    st.altair_chart(bar, use_container_width=True)
+                else:
+                    st.info("No cost data for driver visualization.")
+
+            # --- 7. DATA TABLE ---
+            st.write("### 📑 Detailed Component List")
             df_display = df_wf.copy()
+            df_display['Unit Cost'] = df_display['Unit Cost'].apply(lambda x: f"${x:,.2f}")
             df_display['Ext. Cost'] = df_display['Ext. Cost'].apply(lambda x: f"${x:,.2f}")
             st.dataframe(df_display, use_container_width=True, hide_index=True)
             
-            # --- 6. EXPORT FEATURE ---
+            # --- 8. EXPORT ---
             csv_data = df_wf.to_csv(index=False).encode('utf-8')
             st.download_button(
-                label=f"📥 Download {selected_sku} BOM as CSV",
+                label=f"📥 Download {selected_sku} BOM",
                 data=csv_data,
                 file_name=f"BOM_{selected_sku}.csv",
                 mime="text/csv",
             )
         else:
-            st.warning("⚠️ No components found for this ID in the BOM Links file.")
+            st.warning("⚠️ No components found for this ID.")
 
 except Exception as e:
     st.error(f"Critical System Error: {e}")
