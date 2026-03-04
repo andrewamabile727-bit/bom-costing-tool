@@ -3,7 +3,7 @@ import pandas as pd
 import re
 import altair as alt
 
-st.set_page_config(page_title="BOM Tool v5.5", layout="wide")
+st.set_page_config(page_title="BOM Tool v5.6", layout="wide")
 
 # --- FILE CONFIGURATION ---
 SKU_FILE = "SKU_Mapping.csv"
@@ -29,6 +29,8 @@ try:
 
     df_master['Part No.'] = df_master['Part No.'].astype(str).str.strip()
     df_master['Unit Cost'] = df_master['Unit Cost'].apply(clean_currency)
+    # CRITICAL: Fill empty categories so the Pie Chart doesn't break
+    df_master['Category'] = df_master['Category'].fillna('Uncategorized')
     item_details = df_master.set_index('Part No.').to_dict('index')
 
     df_links.columns = ['Parent Part', 'Child Part', 'Qty Per'] + list(df_links.columns[3:])
@@ -36,7 +38,6 @@ try:
     df_links['Child Part'] = df_links['Child Part'].astype(str).str.strip()
     df_links['Qty Per'] = pd.to_numeric(df_links['Qty Per'], errors='coerce').fillna(1.0)
 
-    # Build Hierarchy Map
     parent_map = {}
     for _, row in df_links.iterrows():
         p, c, q = row['Parent Part'], row['Child Part'], row['Qty Per']
@@ -117,34 +118,35 @@ try:
             with col_chart1:
                 st.write("### 📊 Spend by Category")
                 df_cat = df_wf.groupby('Category')['Ext. Cost'].sum().reset_index()
+                # Only show if there is a cost > 0
                 df_cat = df_cat[df_cat['Ext. Cost'] > 0]
                 
                 if not df_cat.empty:
                     pie = alt.Chart(df_cat).mark_arc(innerRadius=60).encode(
                         theta=alt.Theta(field="Ext. Cost", type="quantitative"),
-                        color=alt.Color(field="Category", type="nominal", legend=alt.Legend(title="Category")),
-                        tooltip=[alt.Tooltip('Category'), alt.Tooltip('Ext. Cost', format="$,.2f")]
+                        color=alt.Color(field="Category", type="nominal", scale=alt.Scale(scheme='tableau10')),
+                        tooltip=['Category', alt.Tooltip('Ext. Cost', format="$,.2f")]
                     ).properties(height=350)
                     st.altair_chart(pie, use_container_width=True)
                 else:
-                    st.info("No cost data for category visualization.")
+                    st.info("⚠️ No cost data found for category chart.")
 
             with col_chart2:
                 st.write("### 📈 Top 10 Cost Drivers")
-                # Group by Part No + Description to get the top drivers
                 df_drivers = df_wf.groupby(['Part No.', 'Description'])['Ext. Cost'].sum().reset_index()
                 df_drivers = df_drivers.sort_values(by='Ext. Cost', ascending=False).head(10)
                 df_drivers = df_drivers[df_drivers['Ext. Cost'] > 0]
 
                 if not df_drivers.empty:
-                    bar = alt.Chart(df_drivers).mark_bar(color='#1f77b4').encode(
-                        x=alt.X('Ext. Cost:Q', axis=alt.Axis(format="$,.0f"), title="Total Extended Cost"),
-                        y=alt.Y('Part No.:N', sort='-x', title="Part Number"),
+                    bar = alt.Chart(df_drivers).mark_bar().encode(
+                        x=alt.X('Ext. Cost:Q', title="Total Cost", axis=alt.Axis(format="$,.0f")),
+                        y=alt.Y('Part No.:N', sort='-x', title="Part No"),
+                        color=alt.value("#1f77b4"),
                         tooltip=['Part No.', 'Description', alt.Tooltip('Ext. Cost', format="$,.2f")]
                     ).properties(height=350)
                     st.altair_chart(bar, use_container_width=True)
                 else:
-                    st.info("No cost data for driver visualization.")
+                    st.info("⚠️ No cost data found for drivers chart.")
 
             # --- 7. DATA TABLE ---
             st.write("### 📑 Detailed Component List")
@@ -155,14 +157,7 @@ try:
             
             # --- 8. EXPORT ---
             csv_data = df_wf.to_csv(index=False).encode('utf-8')
-            st.download_button(
-                label=f"📥 Download {selected_sku} BOM",
-                data=csv_data,
-                file_name=f"BOM_{selected_sku}.csv",
-                mime="text/csv",
-            )
-        else:
-            st.warning("⚠️ No components found for this ID.")
+            st.download_button(label=f"📥 Download {selected_sku} BOM", data=csv_data, file_name=f"BOM_{selected_sku}.csv", mime="text/csv")
 
 except Exception as e:
-    st.error(f"Critical System Error: {e}")
+    st.error(f"Error: {e}")
