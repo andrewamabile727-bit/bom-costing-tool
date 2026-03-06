@@ -3,121 +3,127 @@ import pandas as pd
 import re
 import os
 
-st.set_page_config(page_title="BOM Tool v8.1", layout="wide")
+st.set_page_config(page_title="BOM Tool v8.2", layout="wide")
 
-# --- 1. ROBUST FILE LOADING ---
-def get_clean_df(file_pattern):
-    # Find file even with weird naming like "Skus..xlsx"
-    target = next((f for f in os.listdir('.') if file_pattern.lower() in f.lower() and f.endswith('.csv')), None)
-    if not target: return None
+# --- 1. SMART FILE LOCATOR ---
+def load_data(pattern):
+    # Searches for the file even if it has double dots or extra extensions
+    fname = next((f for f in os.listdir('.') if pattern.lower() in f.lower() and f.endswith('.csv')), None)
+    if not fname:
+        return None
     
-    # Load with 'utf-8-sig' to handle Excel's hidden formatting
-    df = pd.read_csv(target, encoding='utf-8-sig', on_bad_lines='skip')
+    # Read with utf-8-sig to strip Excel's hidden BOM characters
+    df = pd.read_csv(fname, encoding='utf-8-sig', on_bad_lines='skip')
     
-    # HEAL HEADERS: Remove spaces, newlines, and "Unnamed" ghost columns
+    # CLEAN HEADERS: Remove ghost columns and trim spaces from titles
     df = df.loc[:, ~df.columns.str.contains('^Unnamed|^$')]
-    df.columns = [" ".join(str(c).split()).strip() for c in df.columns]
+    df.columns = [str(c).strip() for c in df.columns]
     
-    # HEAL DATA: Strip spaces from every cell in the file
+    # CLEAN DATA: Trim spaces from every cell in the spreadsheet
     df = df.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
     return df
 
-def clean_currency(val):
-    if pd.isna(val) or str(val).strip() in ["", "-", "$-", "$ -"]: return 0.0
-    num_str = re.sub(r'[^\d.]', '', str(val))
+def clean_val(val):
+    """Converts '$1.11' or ' $- ' into a clean float 0.00"""
+    if pd.isna(val) or str(val).strip() in ["", "-", "$-", "$ -"]:
+        return 0.0
+    text = re.sub(r'[^\d.]', '', str(val))
     try:
-        return float(num_str) if num_str else 0.0
+        return float(text) if text else 0.0
     except:
         return 0.0
 
-# --- 2. DATA INITIALIZATION ---
-st.title("🛠️ BOM Professional v8.1")
+# --- 2. INITIALIZE ---
+st.title("🚀 BOM Professional v8.2")
 
-df_m = get_clean_df("Item_Master")
-df_l = get_clean_df("BOM_Links")
-df_s = get_clean_df("L0&L1 Skus")
+df_m = load_data("Item_Master")
+df_l = load_data("BOM_Links")
+df_s = load_data("L0&L1 Skus")
 
-if df_m is None or df_l is None or df_s is None:
-    st.error("🚨 Missing Files! Ensure 'Item_Master', 'BOM_Links', and 'L0&L1 Skus' CSVs are on GitHub.")
+if any(x is None for x in [df_m, df_l, df_s]):
+    st.error("🚨 Missing Files! Check your GitHub repository for the CSV files.")
     st.stop()
 
-# Build dictionaries for fast lookup
-# Find Cost column regardless of spaces
-cost_col = next((c for c in df_m.columns if "Cost" in c), "Unit Cost")
-df_m['Price_Internal'] = df_m[cost_col].apply(clean_currency)
-master_lookup = df_m.set_index('Part No.').to_dict('index')
+# --- 3. DATA ARCHITECTURE ---
+# Find the cost column (handles 'Unit Cost' with or without spaces)
+cost_col = next((c for c in df_m.columns if "Cost" in c), df_m.columns[-1])
+df_m['Price_Clean'] = df_m[cost_col].apply(clean_val)
+master_map = df_m.set_index('Part No.').to_dict('index')
 
-# Build the Links Tree (Parent -> Children)
-links_tree = {}
+# Build the hierarchy map
+tree = {}
 for _, row in df_l.iterrows():
-    p = str(row.iloc[0]) # Column 1: Parent
-    if p not in links_tree: links_tree[p] = []
-    links_tree[p].append({
-        'c': str(row.iloc[1]), # Column 2: Child
-        'q': pd.to_numeric(row.iloc[2], errors='coerce') or 1.0, # Column 3: Qty
-        'u': str(row.iloc[3]) if len(row) > 3 else "Ea." # Column 4: UOM
+    parent = str(row.iloc[0]) # Parent Part
+    if parent not in tree: tree[parent] = []
+    tree[parent].append({
+        'id': str(row.iloc[1]), # Child Part
+        'qty': pd.to_numeric(row.iloc[2], errors='coerce') or 1.0,
+        'uom': str(row.iloc[3]) if len(row) > 3 else "Ea."
     })
 
-# --- 3. UI SIDEBAR ---
-cat_map = {
+# --- 4. NAVIGATION ---
+sections = {
     "Saleable SKUs": ("Saleable Sku", "Saleable Sku Description"),
     "Base Assemblies": ("Base Assy Kit", "Base Assy Kit Description"),
-    "Countertop Assemblies": ("Countertop Assy Kit", "Countertop Assy Kit Description"),
-    "Cladding Kits": ("Cladding Assy Kit", "Cladding Assy Kit Description")
+    "Countertops": ("Countertop Assy Kit", "Countertop Assy Kit Description"),
+    "Cladding": ("Cladding Assy Kit", "Cladding Assy Kit Description")
 }
-mode = st.sidebar.selectbox("View Category", list(cat_map.keys()))
-id_col, desc_col = cat_map[mode]
+view = st.sidebar.selectbox("Category", list(sections.keys()))
+id_field, desc_field = sections[view]
 
-# Dropdown generation
-drop_options = []
-if id_col in df_s.columns:
-    valid_skus = df_s[df_s[id_col].notna() & (df_s[id_col] != "")]
-    for _, row in valid_skus.drop_duplicates(subset=[id_col]).iterrows():
-        drop_options.append(f"{row[id_col]} | {row.get(desc_col, 'N/A')}")
+# Populate list
+sku_list = []
+if id_field in df_s.columns:
+    subset = df_s[df_s[id_field].notna() & (df_s[id_field] != "")]
+    for _, r in subset.drop_duplicates(subset=[id_field]).iterrows():
+        sku_list.append(f"{r[id_field]} | {r.get(desc_field, 'N/A')}")
 
-selection = st.selectbox(f"Select {mode}", ["-- Choose --"] + sorted(drop_options))
+target = st.selectbox(f"Select {view}", ["-- Select --"] + sorted(sku_list))
 
-if selection != "-- Choose --":
-    sel_id = selection.split(" | ")[0].strip()
-    sel_desc = selection.split(" | ")[1].strip()
+if target != "-- Select --":
+    sel_id = target.split(" | ")[0].strip()
+    sel_desc = target.split(" | ")[1].strip()
 
-    # --- 4. EXPLOSION ENGINE ---
-    final_bom = []
-    def explode(parent_id, depth=1, multiplier=1):
-        if depth > 10: return # Safety cap
-        for component in links_tree.get(parent_id, []):
-            cid = component['c']
-            qty = multiplier * component['q']
-            info = master_lookup.get(cid, {})
+    # --- 5. RECURSIVE ENGINE ---
+    results = []
+    def dig(pid, level=1, multiplier=1):
+        if level > 10: return # Stop infinite loops
+        for item in tree.get(pid, []):
+            cid = item['id']
+            total_qty = multiplier * item['qty']
+            meta = master_map.get(cid, {})
             
-            final_bom.append({
-                'Level': depth,
-                'Parent': parent_id,
+            results.append({
+                'Level': level,
+                'Parent': pid,
                 'Part No.': cid,
-                'Description': info.get('Part Description', 'N/A'),
-                'Total Qty': qty,
-                'UOM': component['u'],
-                'Unit Cost': info.get('Price_Internal', 0.0),
-                'Ext. Cost': info.get('Price_Internal', 0.0) * qty,
-                'Make/Buy': info.get('Make/Buy', 'N/A')
+                'Description': meta.get('Part Description', 'N/A'),
+                'Qty': item['qty'],
+                'Total Req': total_qty,
+                'UOM': item['uom'],
+                'Unit Cost': meta.get('Price_Clean', 0.0),
+                'Ext. Cost': meta.get('Price_Clean', 0.0) * total_qty
             })
-            # Recursive call
-            explode(cid, depth + 1, qty)
+            dig(cid, level + 1, total_qty)
 
-    explode(sel_id)
+    dig(sel_id)
 
-    if final_bom:
-        res_df = pd.DataFrame(final_bom)
-        st.metric("Total Assembly Cost", f"${res_df['Ext. Cost'].sum():,.2f}")
+    if results:
+        final_df = pd.DataFrame(results)
         
-        # Format for display
-        disp_df = res_df.copy()
-        disp_df['Unit Cost'] = disp_df['Unit Cost'].map("${:,.2f}".format)
-        disp_df['Ext. Cost'] = disp_df['Ext. Cost'].map("${:,.2f}".format)
-        st.dataframe(disp_df, use_container_width=True, hide_index=True)
+        # Dashboard
+        c1, c2 = st.columns(2)
+        c1.metric("Total Cost", f"${final_df['Ext. Cost'].sum():,.2f}")
+        c2.metric("Components", len(final_df))
         
-        # Export
-        csv_out = f"Report for: {sel_id}\n\n" + res_df.to_csv(index=False)
-        st.download_button("📥 Download BOM", csv_out.encode('utf-8-sig'), f"BOM_{sel_id}.csv")
+        # Table
+        disp = final_df.copy()
+        disp['Unit Cost'] = disp['Unit Cost'].map("${:,.2f}".format)
+        disp['Ext. Cost'] = disp['Ext. Cost'].map("${:,.2f}".format)
+        st.dataframe(disp, use_container_width=True, hide_index=True)
+        
+        # Download
+        csv = f"BOM REPORT: {sel_id}\n\n" + final_df.to_csv(index=False)
+        st.download_button("📥 Download CSV", csv.encode('utf-8-sig'), f"BOM_{sel_id}.csv")
     else:
-        st.warning(f"No components found for '{sel_id}'. Check if this ID is listed in the 'Parent Part' column of your BOM Links file.")
+        st.warning(f"No components found for {sel_id}. Ensure this ID is in the 'Parent Part' column of your BOM Links file.")
