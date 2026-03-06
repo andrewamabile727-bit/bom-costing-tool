@@ -3,7 +3,7 @@ import pandas as pd
 import re
 import os
 
-st.set_page_config(page_title="BOM Tool v6.8", layout="wide")
+st.set_page_config(page_title="BOM Tool v6.9", layout="wide")
 
 # --- 1. FILENAME CONFIGURATION ---
 SKU_FILE = "L0&L1 Skus..xlsx - Sheet1.csv" 
@@ -18,13 +18,19 @@ def clean_currency(value):
     return float(value)
 
 def super_clean_df(df):
+    """
+    Cleans dataframes by stripping spaces from headers and values.
+    This prevents 'Column Not Found' errors caused by Excel formatting.
+    """
+    df.columns = [str(c).strip() for c in df.columns]
     df.columns = [" ".join(str(c).split()) for c in df.columns]
-    df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
+    # Use map instead of applymap for modern pandas compatibility
+    df = df.map(lambda x: x.strip() if isinstance(x, str) else x)
     return df
 
 # --- 2. FILE CHECK ---
 if not all(os.path.exists(f) for f in [SKU_FILE, MASTER_FILE, LINKS_FILE]):
-    st.error("🚨 Missing source files in GitHub directory.")
+    st.error("🚨 Missing source files in GitHub directory. Please ensure all CSVs are uploaded.")
     st.stop()
 
 try:
@@ -33,15 +39,21 @@ try:
     df_links = super_clean_df(pd.read_csv(LINKS_FILE, encoding='utf-8-sig'))
     df_sku_list = super_clean_df(pd.read_csv(SKU_FILE, encoding='utf-8-sig'))
 
-    # Clean Costs & Ensure Procurement columns exist
-    df_master['Unit Cost'] = df_master['Unit Cost'].apply(clean_currency)
+    # Clean Costs & Ensure Procurement columns exist (v6.7+ requirement)
+    if 'Unit Cost' in df_master.columns:
+        df_master['Unit Cost'] = df_master['Unit Cost'].apply(clean_currency)
+    else:
+        st.error("Column 'Unit Cost' not found in Item Master. Check for spelling/spaces.")
+        st.stop()
+
     for col in ['Fulfillment', 'Supplier']:
         if col not in df_master.columns:
             df_master[col] = ""
 
     item_details = df_master.set_index('Part No.').to_dict('index')
 
-    # Process Links Data
+    # Process Links Data - Handle 'UM' or 'UOM' variations
+    # We map by index to ensure stability: 0:Parent, 1:Child, 2:Qty, 3:UOM
     df_links.columns = ['Parent Part', 'Child Part', 'Qty Per', 'UOM'] + list(df_links.columns[4:])
     
     parent_map = {}
@@ -66,7 +78,12 @@ try:
     }
 
     id_col, desc_col = mapping[ui_option]
-    sku_options = [f"{row[id_col]} | {row[desc_col]}" for _, row in df_sku_list.drop_duplicates(subset=[id_col]).iterrows() if str(row[id_col]).lower() != 'nan']
+    
+    # Filter out empty rows from SKU list
+    sku_options = []
+    if id_col in df_sku_list.columns:
+        filtered_sku = df_sku_list[df_sku_list[id_col].notna()]
+        sku_options = [f"{row[id_col]} | {row[desc_col]}" for _, row in filtered_sku.drop_duplicates(subset=[id_col]).iterrows() if str(row[id_col]).lower() != 'nan']
 
     selected_label = st.selectbox(f"Select {ui_option}", ["-- Select --"] + sorted(sku_options))
 
@@ -118,24 +135,16 @@ try:
             # --- 6. EXPORT WITH HEADER ROWS ---
             export_cols = ['BOM Level', 'Parent', 'Part No.', 'Description', 'Category', 'Make/Buy', 'Fulfillment', 'Supplier', 'Qty Per', 'UOM', 'Total Req.', 'Unit Cost', 'Ext. Cost']
             
-            # Construct the CSV as a string first
             header_str = f"Assembly Number:, {selected_sku}\n"
             header_str += f"Description:, {selected_desc}\n\n"
             
             table_str = df_wf[export_cols].to_csv(index=False)
             full_csv_str = header_str + table_str
             
-            # Encode with utf-8-sig so Excel handles the comma-separated metadata correctly
             csv_data = full_csv_str.encode('utf-8-sig')
-            
-            st.download_button(
-                label="📥 Download Extended BOM with Header", 
-                data=csv_data, 
-                file_name=f"BOM_Export_{selected_sku}.csv", 
-                mime="text/csv"
-            )
+            st.download_button(label="📥 Download Extended BOM with Header", data=csv_data, file_name=f"BOM_Export_{selected_sku}.csv", mime="text/csv")
         else:
-            st.warning("⚠️ No components found for this selection.")
+            st.warning(f"⚠️ No components found for {selected_sku}. Verify this ID exists in the BOM Links file.")
 
 except Exception as e:
-    st.error(f"Error: {e}")
+    st.error(f"Critical Application Error: {e}")
