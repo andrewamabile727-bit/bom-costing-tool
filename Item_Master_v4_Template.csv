@@ -1,23 +1,121 @@
 Part No.,Part Description,Make/Buy,Category, Unit Cost ,Fulfillment,Supplier
-F88490,Lower Horizontal Frame Support (Beacon),Buy,Frame Tubes (F),$28.00 ,MTO,Baosheng
-F38652,Upper Outer Horizontal Frame Support (Beacon),Buy,Frame Tubes (F),$14.00 ,MTO,Baosheng
-F88492,Upper Inner Horizontal Frame Support (Beacon),Buy,Frame Tubes (F),$9.50 ,MTO,Baosheng
-F38654,Outer Vertical Frame Support (Beacon),Buy,Frame Tubes (F),$17.00 ,MTO,Baosheng
-F88494,Inner Vertical Frame Support (Beacon),Buy,Frame Tubes (F),$15.00 ,MTO,Baosheng
-F38656,Upper & Lower Frame Tie  (Beacon),Buy,Frame Tubes (F),$12.20 ,MTO,Baosheng
-F80900,Horizontal Frame Tube (24in Wd. Low Module),Buy,Frame Tubes (F),$12.50 ,MTO,Baosheng
-F35542,Vertcal Frame Tube  (32in Wd. High Module),Buy,Frame Tubes (F),$19.00 ,MTO,Baosheng
-F18171,Inner Horizontal Frame Tube (90deg. H. Corner Module),Buy,Frame Tubes (F),$12.00 ,MTO,Baosheng
-F18172,Outer Horizontal Frame Tube (90deg. H. Corner Module),Buy,Frame Tubes (F),$13.50 ,MTO,Baosheng
-F49154,Vertcal Frame Tube  (25in Sag. Grill Module),Buy,Frame Tubes (F),$14.50 ,MTO,Baosheng
-F30757,Horizontal Frame Tube  (32in Sag. Grill Module),Buy,Frame Tubes (F),$14.00 ,MTO,Baosheng
-M00489,"Single, Connector Base, Aluminum",Buy,Connector Comp. (M),$4.25 ,MTO,TDB
-M13538,"Double, Connector Base, Aluminum",Buy,Connector Comp. (M),$7.14 ,MTO,TDB
-M26587,"3way-A Config, Conn. Base, Aluminum",Buy,Connector Comp. (M),$8.16 ,MTO,TDB
-M39636,"3way-B Config, Universal Base, Aluminum",Buy,Connector Comp. (M),$8.16 ,MTO,TDB
-M20651,"5way 45deg Connector Base, Aluminum",Buy,Connector Comp. (M),$34.60 ,MTO,TDB
-M18529,Standard Length Stanchion,Buy,Connector Comp. (M),$2.00 ,MTO,TDB
-M87714,Extended Length Stanchion,Buy,Connector Comp. (M),$4.00 ,MTO,TDB
+K04980,"SikaBond Construction Adhesive, 29oz Tube",Buy,Adhesive, $0.82 ,OTS,Home Depot
+K04981,"Locktite Blue 242, 0.2oz Tube/12 Pack",Buy,Adhesive, $18.01 ,OTS,Home Depot
+K04982,"Gorilla Heavy Duty Construction Adhesive Ultimate, 9oz Tube",Buy,Adhesive, $1.51 ,OTS,Home Depot
+K04983,"Gorilla Max Strength Construction Adhesive Clear, 9oz Tube",Buy,Adhesive, $1.76 ,OTS,Home Depot
+K61430,GFRSCC Premix Cement,Buy,Concrete, $0.71 ,OTS,Trinic
+K61431,Pigment (Iron Black),Buy,Concrete, $4.25 ,OTS,Trinic
+K61432,Pigment (Deep Black),Buy,Concrete, $4.95 ,OTS,Trinic
+K61433,STAGE II Accelerator,Buy,Concrete, $2.74 ,OTS,Trinic
+K61435,"1/2"" Glass Fiber (13kg/28.7lbs)",Buy,Concrete, $3.37 ,OTS,Trinic
+K61436,"3/4"" Glass Fiber (9kg/19.8lbs)",Buy,Concrete, $3.37 ,OTS,Trinic
+K99234,Pol-Ease 2650 Mold Release,Buy,Solvent, $6.06 ,OTS,Medford
+K61437,"Rebar 1/4""Dia. x 94""",Buy,Concrete, $0.36 ,OTS,Trinic
+K20115,"Aluminum J-Channel (144'' x 1-1/8"" x 5/8"" x 1/4"" x .270"")",Buy,Extrusion, $2.25 ,OTS,Eagle Aluminum
+K20116,"Aluminum Angle (144'' x 1-1/4"" x 1-1/4"" x 1/16"")",Buy,Extrusion, $2.76 ,OTS,Eagle Aluminum
+K20117,Aluminum Angle (144'' x 5/16'' x 1-1/2'' x 1/16''),Buy,Extrusion, $1.87 ,OTS,Eagle Aluminum
+K39528,"10-32 Flat Head Phillips Head Screw, 1/2"" Long, SS, Undercut",Buy,Hardware Fastener, $0.15 ,OTS,McMaster Carr
+K39476,"Adhesive Stud (M10), 316 SS, M10 x 1.5 mm Thread, 40mm L., 38mm D. Base",Buy,Hardware Fastener, $4.01 ,OTS,McMaster Carr
+K39477,"Flat Washer (M10), 316 SS, 10.5 mm ID, 18.0 mm OD",Buy,Hardware Fastener, $0.22 ,OTS,McMaster Carr
+K39478,"Hex Nut (M10), 316SS, M10 x 1.5 mm Thread Size",Buy,Hardware Fastener, $1.84 ,OTS,McMaster Carr
+K39479,"Lock Washer (M10), 316 SS, 10.7 mm ID, 16 mm OD",Buy,Hardware Fastener, $0.29 ,OTS,McMaster Carr
+K39480,"Rubber Washer (M10), 10.5 mm ID, 20 mm OD",Buy,Hardware Fastener, $0.46 ,OTS,McMaster Carr
+K39481,"Flat Spacer Washer (M10), 10.5 mm ID, 20mm OD",Buy,Fastener Hardware, $0.55 ,OTS,McMaster Carr
+K39637,"10-32 x 25/64, Zinc Alloy Tapping Inserts for Softwood",Buy,Fastener Hardware, $0.23 ,OTS,McMaster Carr
+K39536,"10-32 Flat Head Phillips Head Screw, 7/16"" Long, SS, Undercut",Buy,Fastener Hardware, $0.14 ,OTS,McMaster Carr
+K62699,Rigid Caster,Buy,Hardware Specialty, $7.33 ,OTS,Mapp Caster
+K62700,Swivel Caster,Buy,Hardware Specialty, $11.00 ,OTS,Mapp Caster
+K62702,Levelling Pad,Buy,Hardware Specialty, $10.55 ,OTS,JW Winco
+K39529,"Flat Washer (1/2""), 316 SS, 0.531"" ID, 1.250"" OD",Buy,Hardware Fastener, $0.53 ,OTS,McMaster Carr
+K39530,"Threaded Stud, 1/2-13 x 4in., 316 SS",Buy,Hardware Fastener, $6.37 ,OTS,McMaster Carr
+K39531,"1/2-13 Thin-Profile Hex Lock Nut, 316 SS, 5/16"" H.",Buy,Hardware Fastener, $0.89 ,OTS,McMaster Carr
+K39475,"Split Pin, 1/8"" Diam. X 3/4""L., 18-8 SS",Buy,Hardware Fastener, $0.15 ,OTS,McMaster Carr
+K39535,Panel Hole Plug (1.1/8),Buy,Hardware Fastener, $0.22 ,OTS,McMaster Carr
+K39532,"Rivet Domed Head, 5/32"" Diameter, for 0.126""-0.187"" Material Thickness",Buy,Hardware Fastener, $0.10 ,OTS,McMaster Carr
+K39533,"Rivet Domed Head, 5/32"" Diameter, for 0.188""- 0.25"" Material Thickness",Buy,Hardware Fastener, $0.09 ,OTS,McMaster Carr
+K01267,"6mm Magnesium Oxide Sheet 4ft X 8ft X 1/4"" ",Buy,MGO Board, $0.78 ,OTS,Ambient
+K41104,"HardieBacker Cement Backerboard, 1/4 x 3ft x 5ft",Buy,Cement Board, $0.87 ,OTS,Home Depot
+K82674,PLA-CF - Black (14100) / Filament with spool / 1 kg,Buy,Polymer Filament, $40.04 ,OTS,Bambu Labs
+K98029,Pull Handle 116mm,Buy,Hardware Custom Item, $1.56 ,BTO,Foshan Builders Hardware Co
+K98030,Pull Handle 300mm,Buy,Hardware Custom Item, $2.41 ,BTO,Foshan Builders Hardware Co
+K98031,Pull Handle 400mm,Buy,Hardware Custom Item, $6.43 ,BTO,Foshan Builders Hardware Co
+K53586,"Journeyman-Pro 15 Amp 125 Volt NEMA 5-15R Receptacle Kit with Integrated 20"" Extension Cord + Waterproof Rubber Cover",Buy,Electrical, $31.99 ,OTS,Journeyman-Pro
+K53584,On/Off Rocker Switch Assy. w/AC Piggyback 3ft Extension Cord ,Buy,Electrical, $15.99 ,OTS,Amazon (PolyEnergy)
+K53583,"MICTUNING 5Amp 125V AC Port Plug with Heavy Duty Integrated Dual 20"" Extension Cord and Water-Resistant Spring-loaded Cover - Black",Buy,Electrical, $28.90 ,OTS,MICTUNING/Amazon
+K55515,Water In-Take & Waste Line Hook Up Panel,Buy,Plumbing, $21.75 ,OTS,B&B Molders
+K85421,Surface Mount Vent Panel,Buy,Cabinet Accessory - SS, $-   ,OTS,Amazon
+K85422,"Paper Towel Holder, Under Cabinet Paper Towel Roll Holder for Kitchen, Self Adhesive or Drilling Wall Mount for Kitchen Paper Towel, Stainless Steel SUS304",Buy,Cabinet Accessory - SS, $10.81 ,OTS,BANQLE/Amazon
+K53585,"KUNCAN 15A AC Port Plug - 125V Power Inlet Socket with Triple 18 Inch Extension Cord, NEMA 5-15 Plug Flanged Inlet with Waterproof Cover Outdoor Extension Cable",Buy,Electrical, $16.99 ,OTS,KUNCAN
+K37936,"LED Strip, 12vdc 2.92watt, 312 Lumens, 3.4K Natural Light, IP65 Water Resistant, 16.4' (5m)",Buy,"Lighting (LED, Transformer, Wire)", $-   ,OTS,Aspect LED
+K37937,LED Power Transformer  ,Buy,"Lighting (LED, Transformer, Wire)", $-   ,OTS,Aspect LED
+K37938,"LED Alum. Track w/Clear Cover, 17mm x 8mm, 1 meter",Buy,"Lighting (LED, Transformer, Wire)", $-   ,OTS,Muzata
+K37939,LED Track Corner Connector,Buy,"Lighting (LED, Transformer, Wire)", $-   ,OTS,Muzata
+K37940,LED Solderless Connector,Buy,"Lighting (LED, Transformer, Wire)", $-   ,OTS,Amazon/Visdoll
+K37941,"LED 18ga Wire, 100ft, 2 Wire, 12v/24v",Buy,"Lighting (LED, Transformer, Wire)", $-   ,OTS,Amazon/Tyumen
+K37942,LED Straight Power Connector,Buy,"Lighting (LED, Transformer, Wire)", $-   ,OTS,Aspect LED
+K37943,LED Wire Cover - 1/4 Inch Wire Loom Split Tubing - 50ft Cord ,Buy,"Lighting (LED, Transformer, Wire)", $-   ,OTS,Amazon/Allwin
+K37944,LED Wire Cover Grommet,Buy,"Lighting (LED, Transformer, Wire)", $-   ,OTS,McMaster Carr
+K51009,"Bar sink faucet, Single Hole, 10in, Stainless, Single Cold ",Buy,"Plumbing (Sink, Faucet, Comp.)", $31.23 ,BTO,Aquacubic Sanitary Ware Co. Ltd
+K51008,"Sink Drop-In, Flange Mount, 15in w/Single Hole",Buy,"Plumbing (Sink, Faucet, Comp.)", $57.93 ,BTO,Zhejiang Prussia Kitchen & Bath Co. Ltd
+K55516,Universal Drain Kit for Bathroom Sinks - SnappyTrap,Buy,"Plumbing (Sink, Faucet, Comp.)", $18.79 ,OTS,Home Depot
+K61483,"25 mm Basalt Reinforcing Mesh & Scrim for Concrete, 1sq Yd",Buy,Concrete, $30.26 ,OTS,GlobMarble
+K25954,"Offset Piano Hinge, 304 SS",Buy,Hardware Specialty, $18.51 ,MTO,HDC
+K79312,"Aluminum Unthreaded Spacer, 5/8"" OD, 1/2"" Long, for 1/4"" Screw Size",Buy,Hardware Specialty, $2.40 ,OTS,McMaster Carr
+K39482,"Press-Fit Studs 18-8 Stainless Steel, 8-32 Thread, 1/2"" Long, PEM Fhs832-8",Buy,Fastener Hardware, $0.31 ,OTS,McMaster Carr
+K39483,"8-32 Acorn Nut, SS",Buy,Fastener Hardware, $1.00 ,OTS,McMaster Carr
+K39527,"#8 Flat Washer, SS",Buy,Fastener Hardware, $0.05 ,OTS,McMaster Carr
+K39638,#8 Split Lock Washer,Buy,Fastener Hardware, $0.06 ,OTS,McMaster Carr
+K39588,"10-32 x 3/8"" Pan Head Phillips Screw, SS 316",Buy,Hardware Fastener, $0.33 ,OTS,McMaster Carr
+K39589,"8-32 x 1/2"" Pan Head Phillips Screw, SS 316",Buy,Hardware Fastener, $0.15 ,OTS,McMaster Carr
+K20118,"Aluminum Angle (144'' x 1/2"" x 1"" x 1/16"")",Buy,Extrusion, $2.28 ,OTS,Eagle Aluminum
+K10462,Eco-Etch Concrete Etcher,Buy,Solvent, $51.98 ,OTS,Eco Safety Pdts.
+K10463,Super Concrete Dissolver,Buy,Solvent, $52.99 ,OTS,Cleen Pdts
+K39584,"10-32 x 1.1/2"" Flat Head Phillips Screw, 18-8 SS, 82deg.",Buy,Hardware Fastener, $0.37 ,OTS,McMaster Carr
+K39585,"Flat Head Sleeve Nut, M6x16mm, SS",Buy,Hardware Fastener, $2.54 ,OTS,Bel-Metric
+K79317,"10-32 x 5/8L Female Threaded Round Standoff, Aluminum, 1/4"" OD",Buy,Hardware Specialty, $0.26 ,OTS,McMaster Carr
+K39582,"18-8 Stainless Steel Hex Head Screw, 1/4""-20 Thread Size, 2-1/2"" Long, Fully Threaded",Buy,Hardware Fastener, $0.60 ,OTS,McMaster Carr
+K39583,"18-8 Stainless Steel Washer for 1/4"" Screw Size, General Purpose, 0.281"" ID, 0.625"" OD",Buy,Hardware Fastener, $0.11 ,OTS,McMaster Carr
+K39534,"Press-Fit Nut for Sheet Metal, 1/4""-20, for 0.047"" Minimum Panel Thickness",Buy,Hardware Fastener, $0.43 ,OTS,McMaster Carr
+K39580,"Press-Fit Nut for Sheet Metal, 8-32, for 0.040"" Minimum Panel Thickness",Buy,Hardware Fastener, $0.19 ,OTS,McMaster Carr
+K39633,"Press-Fit Nut for Sheet Metal, 10-32, for 0.040"" Minimum Panel Thickness",Buy,Hardware Fastener, $0.28 ,OTS,McMaster Carr
+K39586,"1/4-20 Hex Head Screw, 316 Stainless Steel, 5/8"" Long",Buy,Hardware Fastener, $0.53 ,OTS,McMaster Carr
+K39587,"1/4"" Flat Washer, 316 Stainless Steel",Buy,Hardware Fastener, $0.12 ,OTS,McMaster Carr
+K39634,"8-32 x 3/8"" Pan Head Phillips Screw, SS 316",Buy,Hardware Fastener, $0.14 ,OTS,McMaster Carr
+K39635,"M10 x 30mm, 18-8 Stainless Steel Coupling Nut",Buy,Hardware Fastener, $3.58 ,OTS,McMaster Carr
+K39636,"M10 x 35mm, 18-8 Stainless Steel Flanged Button Head Screw",Buy,Hardware Fastener, $2.41 ,OTS,McMaster Carr
+K79364,"Dry-Running Nylon Sleeve Bearing, 1/4"" Shaft Diameter, 1/2"" Long, 1/2"" OD x 1/16"" Thick Flange",Buy,Hardware Specialty, $2.46 ,OTS,McMaster Carr
+K61482,"Rebar 3/8""D x 94""",Buy,Concrete, $0.56 ,OTS,Trinic
+K63335,"59L (2.1CuFt) Refrigerator, Summit SPR314LOS",Buy,Appliance (Frefrigeration), $595.00 ,BTO,Summit
+K63336,"38L Refrigerator, Sunnai SY-12",Buy,Appliance (Frefrigeration), $349.86 ,BTO,"Sunnai Electrical Appliance Co.,Ltd"
+K63337,"63L Refrigerator, Sunnai SY-63",Buy,Appliance (Frefrigeration), $408.80 ,BTO,"Sunnai Electrical Appliance Co.,Ltd"
+K80914,Ice Bin with Swing Cover (355*305*457mm),Buy,"SS Doors,Drawers, Acc.", $122.64 ,BTO,Kinbin Hotel Equipment Mfg Co. Ltd.
+K80915,Built in two layer kitchen drawer cabinet (345.5*660*490mm),Buy,"SS Doors,Drawers, Acc.", $121.94 ,BTO,Kinbin Hotel Equipment Mfg Co. Ltd.
+K80916,Built in trash kitchen drawer cabinet (345.5*660*490mm),Buy,"SS Doors,Drawers, Acc.", $112.00 ,BTO,Kinbin Hotel Equipment Mfg Co. Ltd.
+K80917,Built in Single Door (355*508*46mm),Buy,"SS Doors,Drawers, Acc.", $50.82 ,BTO,Kinbin Hotel Equipment Mfg Co. Ltd.
+K80918,Built in Single Door (432*610*46mm),Buy,"SS Doors,Drawers, Acc.", $55.72 ,BTO,Kinbin Hotel Equipment Mfg Co. Ltd.
+K80919,Drop In Double Door (751*532*95mm),Buy,"SS Doors,Drawers, Acc.", $73.50 ,BTO,Kinbin Hotel Equipment Mfg Co. Ltd.
+K23498,"All Right 25"" LP Grill",Buy,Appliance (Cooking), $504.00 ,BTO,"Wuxi Allright Metal Products Co., Ltd."
+K23499,"All Right 32"" LP Grill",Buy,Appliance (Cooking), $693.00 ,BTO,"Wuxi Allright Metal Products Co., Ltd."
+K23500,Electric Grill Model EG Home S,Buy,Appliance (Cooking), $375.30 ,BTO,Okpiro 
+F88490,Lower Horizontal Frame Support (Beacon),Buy,Frame Tubes (F), $39.20 ,MTO,Baosheng
+F38652,Upper Outer Horizontal Frame Support (Beacon),Buy,Frame Tubes (F), $19.60 ,MTO,Baosheng
+F88492,Upper Inner Horizontal Frame Support (Beacon),Buy,Frame Tubes (F), $13.30 ,MTO,Baosheng
+F38654,Outer Vertical Frame Support (Beacon),Buy,Frame Tubes (F), $23.80 ,MTO,Baosheng
+F88494,Inner Vertical Frame Support (Beacon),Buy,Frame Tubes (F), $21.00 ,MTO,Baosheng
+F38656,Upper & Lower Frame Tie  (Beacon),Buy,Frame Tubes (F), $17.08 ,MTO,Baosheng
+F80900,Horizontal Frame Tube (24in Wd. Low Module),Buy,Frame Tubes (F), $17.50 ,MTO,Baosheng
+F35542,Vertcal Frame Tube  (32in Wd. High Module),Buy,Frame Tubes (F), $26.60 ,MTO,Baosheng
+F18171,Inner Horizontal Frame Tube (90deg. H. Corner Module),Buy,Frame Tubes (F), $16.80 ,MTO,Baosheng
+F18172,Outer Horizontal Frame Tube (90deg. H. Corner Module),Buy,Frame Tubes (F), $18.90 ,MTO,Baosheng
+F49154,Vertcal Frame Tube  (25in Sag. Grill Module),Buy,Frame Tubes (F), $20.30 ,MTO,Baosheng
+F30757,Horizontal Frame Tube  (32in Sag. Grill Module),Buy,Frame Tubes (F), $19.60 ,MTO,Baosheng
+M00489,"Single, Connector Base, Aluminum",Buy,Connector Comp. (M), $5.95 ,MTO,TDB
+M13538,"Double, Connector Base, Aluminum",Buy,Connector Comp. (M), $10.00 ,MTO,TDB
+M26587,"3way-A Config, Conn. Base, Aluminum",Buy,Connector Comp. (M), $11.42 ,MTO,TDB
+M39636,"3way-B Config, Universal Base, Aluminum",Buy,Connector Comp. (M), $11.42 ,MTO,TDB
+M20651,"5way 45deg Connector Base, Aluminum",Buy,Connector Comp. (M), $48.44 ,MTO,TDB
+M18529,Standard Length Stanchion,Buy,Connector Comp. (M), $2.80 ,MTO,TDB
+M87714,Extended Length Stanchion,Buy,Connector Comp. (M), $5.60 ,MTO,TDB
 N38257,"Single Connector Assy., Std. Stanchion",Make,Connector Assy (N), $-   ,FAB,Internal
 N10578,"Double Connector Assy., Std. Stanchion",Make,Connector Assy (N), $-   ,FAB,Internal
 N82899,3way Tube Connector - A Config.,Make,Connector Assy (N), $-   ,FAB,Internal
@@ -25,77 +123,77 @@ N82900,3way Tube Connector - B Config. ,Make,Connector Assy (N), $-   ,FAB,Inter
 N16910,3way Ext. Tube Connector - A Config.,Make,Connector Assy (N), $-   ,FAB,Internal
 N16911,3way Ext. Tube Connector - B Config. ,Make,Connector Assy (N), $-   ,FAB,Internal
 N69409,"5way Tube Connector Assy., 90 Deg. Corner Mod.",Make,Connector Assy (N), $-   ,FAB,Internal
-S16626,Outer Top Sheath w/o Sink (Beacon),Buy,Ext. Cabinet Sheathing (S),$21.83 ,MTO,HDC
-S72207,Inner Top Sheath (Beacon),Buy,Ext. Cabinet Sheathing (S),$14.45 ,MTO,HDC
-S44754,Bottom Sheath (Beacon),Buy,Ext. Cabinet Sheathing (S),$33.73 ,MTO,HDC
-S34089,End Sheath (Beacon),Buy,Ext. Cabinet Sheathing (S),$21.94 ,MTO,HDC
-S49271,"Inner Side Sheath, Left (Beacon)",Buy,Ext. Cabinet Sheathing (S),$6.78 ,MTO,HDC
-S64453,"Inner Side Sheath, Right (Beacon)",Buy,Ext. Cabinet Sheathing (S),$7.35 ,MTO,HDC
-S46822,"Back Sheath, Accessory Kit B (Beacon)",Buy,Ext. Cabinet Sheathing (S),$43.28 ,MTO,HDC
-S92795,Outer Top Sheath w/Sink (Beacon),Buy,Ext. Cabinet Sheathing (S),$22.03 ,MTO,HDC
-S26496,"Back Sheath, Accessory Kit D (Beacon)",Buy,Ext. Cabinet Sheathing (S),$0.01 ,MTO,HDC
-S47899,"Top Sheath w/o Sink/Ice Bin, 24in wd. Low Module",Buy,Ext. Cabinet Sheathing (S),$21.31 ,MTO,HDC
-S76940,"Top Sheath with Sink/Ice Bin, 24in wd. Low Module",Buy,Ext. Cabinet Sheathing (S),$25.00 ,MTO,HDC
-S52166,"Bottom Sheath, 24in wd. Low Module",Buy,Ext. Cabinet Sheathing (S),$21.89 ,MTO,HDC
-S41502,"Side Sheath, 24in wd. Low Module",Buy,Ext. Cabinet Sheathing (S),$26.38 ,MTO,HDC
-S90669,"Back Sheath, 24in wd. Low Module (Solid)",Buy,Ext. Cabinet Sheathing (S),$31.35 ,MTO,HDC
-S39496,"Top Sheath w/o Sink/Ice Bin, 32in wd. High Module",Buy,Ext. Cabinet Sheathing (S),$21.31 ,MTO,HDC
-S68537,"Top Sheath with Sink/Ice Bin, 32in wd. High Module",Buy,Ext. Cabinet Sheathing (S),$25.00 ,MTO,HDC
-S43763,"Bottom Sheath, 32in wd. High Module",Buy,Ext. Cabinet Sheathing (S),$21.89 ,MTO,HDC
-S33099,"Side Sheath, 32in wd. High Module",Buy,Ext. Cabinet Sheathing (S),$26.38 ,MTO,HDC
-S73252,"Back Sheath, 32in wd. High Module, Accessory Kit B (LP Hole/Vent)",Buy,Ext. Cabinet Sheathing (S),$31.35 ,MTO,HDC
-S77760,"Back Sheath, 32in wd. High Module, Accessory Kit C (Power In Elec./Vent)",Buy,Ext. Cabinet Sheathing (S),$31.35 ,MTO,HDC
-S92689,"45deg. Top/Bottom Reinforcement Plate, 90deg. High Corner Module",Buy,Ext. Cabinet Sheathing (S),$7.51 ,MTO,HDC
-S92690,"Bottom Sheath, 90deg. High Corner Module",Buy,Ext. Cabinet Sheathing (S),$22.99 ,MTO,HDC
-S88423,"Top Sheath, 90deg. High Corner Module",Buy,Ext. Cabinet Sheathing (S),$22.44 ,MTO,HDC
-S82024,"Side Sheath, 90deg. High Corner Module",Buy,Ext. Cabinet Sheathing (S),$26.48 ,MTO,HDC
-S94822,"Corner Sheath, 90deg. High Corner Module",Buy,Ext. Cabinet Sheathing (S),$6.80 ,MTO,HDC
-S94823,"Corner Sheath Bracket, 90deg. High Corner Module",Buy,Ext. Cabinet Sheathing (S),$5.18 ,MTO,HDC
-S79891,"Back Sheath, 90deg. High Corner Module",Buy,Ext. Cabinet Sheathing (S),$29.09 ,MTO,HDC
-S97048,"Side Sheath, 25in Sag. Grill Module",Buy,Ext. Cabinet Sheathing (S),$29.02 ,MTO,HDC
-S17989,"Back Sheath, 25in Sag. Grill Module",Buy,Ext. Cabinet Sheathing (S),$34.99 ,MTO,HDC
-S97047,"Grill Support Brack Side, 25in Sag. Grill Module",Buy,Ext. Cabinet Sheathing (S),$5.26 ,MTO,HDC
-S97049,"Countertop Support Bracket, 25in Sag. Grill Module",Buy,Ext. Cabinet Sheathing (S),$8.99 ,MTO,HDC
-S94914,"Grill Support Brack Rear, 25in Sag. Grill Module",Buy,Ext. Cabinet Sheathing (S),$3.49 ,MTO,HDC
-S37876,"Back Sheath, 90deg. Low Corner Module",Buy,Ext. Cabinet Sheathing (S),$29.09 ,MTO,HDC
-S40009,"Side Sheath, 90deg. Low Corner Module",Buy,Ext. Cabinet Sheathing (S),$26.48 ,MTO,HDC
-S52807,"Corner Sheath, 90deg. Low Corner Module",Buy,Ext. Cabinet Sheathing (S),$6.80 ,MTO,HDC
-S52808,"Corner Sheath Bracket, 90deg. Low Corner Module",Buy,Ext. Cabinet Sheathing (S),$5.18 ,MTO,HDC
-S74797,"Top Sheath, 32in Sag. Grill Module",Buy,Ext. Cabinet Sheathing (S),$0.01 ,MTO,HDC
-S79063,"Bottom Sheath, 32in Sag. Grill Module",Buy,Ext. Cabinet Sheathing (S),$0.01 ,MTO,HDC
-S84832,"Back Sheath, 32in Sag. Grill Module",Buy,Ext. Cabinet Sheathing (S),$0.01 ,MTO,HDC
-S66266,"Grill Support Brack Side, 32in Sag. Grill Module",Buy,Ext. Cabinet Sheathing (S),$0.01 ,MTO,HDC
-S33690,Universal Reinforcement Plate (Upper & Lower),Buy,Ext. Cabinet Sheathing (S),$7.96 ,MTO,HDC
-S77145,"Back Sheath, 24in wd. Low Module (Sink)",Buy,Ext. Cabinet Sheathing (S),$0.01 ,MTO,HDC
-S68742,"Back Sheath, 32in wd. High Module (Sink)",Buy,Ext. Cabinet Sheathing (S),$31.35 ,MTO,HDC
-I51404,Interior Base Sheath (Beacon),Buy,Int. Cabinet Sheathing (I),$25.30 ,MTO,HDC
-I51975,Interior Base Board (Beacon),Buy,Int. Cabinet Sheathing (I),$5.78 ,MTO,HDC
-I40739,Interior Outer Vertical Wall (Beacon),Buy,Int. Cabinet Sheathing (I),$3.16 ,MTO,HDC
-I47138,Interior Outer Top Sheath w/o Sink/Ice Bin (Beacon),Buy,Int. Cabinet Sheathing (I),$15.78 ,MTO,HDC
-I23307,Interior Outer Top Sheath with Sink/Ice Bin (Beacon),Buy,Int. Cabinet Sheathing (I),$20.00 ,MTO,HDC
-I49271,Interior Inner Top Sheath (Beacon),Buy,Int. Cabinet Sheathing (I),$11.14 ,MTO,HDC
-I34340,Outer Vertical Corner Cover (Beacon),Buy,Int. Cabinet Sheathing (I),$2.85 ,MTO,HDC
-I34341,Inner Vertcal Corner Cover (Beacon),Buy,Int. Cabinet Sheathing (I),$2.65 ,MTO,HDC
-I34342,Inner Common Vertical Corner Cover (Beacon),Buy,Int. Cabinet Sheathing (I),$0.01 ,MTO,HDC
-I61804,Vertical Corner Cover (High Module),Buy,Int. Cabinet Sheathing (I),$3.10 ,MTO,HDC
-I61805,Interior Top Sheath (High Module),Buy,Int. Cabinet Sheathing (I),$17.13 ,MTO,HDC
-I90845,"Interior Top Sheath, Sink/Ice Bin (High Module)",Buy,Int. Cabinet Sheathing (I),$22.00 ,MTO,HDC
-I61806,Interior Bottom Sheath  (High Module),Buy,Int. Cabinet Sheathing (I),$15.37 ,MTO,HDC
-I73040,Interior Base Board  (High Module),Buy,Int. Cabinet Sheathing (I),$5.78 ,MTO,HDC
-I70207,Interior Top Sheath (Low Module),Buy,Int. Cabinet Sheathing (I),$17.13 ,MTO,HDC
-I99248,"Interior Top Sheath, Sink/Ice Bin (Low Module)",Buy,Int. Cabinet Sheathing (I),$22.00 ,MTO,HDC
-I70208,Interior Bottom Sheath (Low Module),Buy,Int. Cabinet Sheathing (I),$15.37 ,MTO,HDC
-I81443,Interior Base Board (Low Module),Buy,Int. Cabinet Sheathing (I),$5.78 ,MTO,HDC
-I87013,Vertical Corner Cover 45deg. (90deg. High Corner Module),Buy,Int. Cabinet Sheathing (I),$7.65 ,MTO,HDC
-I87014,Interior Top Sheath (90 deg. High Corner Module),Buy,Int. Cabinet Sheathing (I),$17.99 ,MTO,HDC
-I87015,Interior Bottom Sheath (90 deg. High Corner Module),Buy,Int. Cabinet Sheathing (I),$17.99 ,MTO,HDC
-I98249,Interior Base Board (90 deg. High Corner Module),Buy,Int. Cabinet Sheathing (I),$0.01 ,MTO,HDC
-I21233,Vertical Corner Cover (25in Sag. Grill Module),Buy,Int. Cabinet Sheathing (I),$2.56 ,MTO,HDC
-I44998,Vertical Corner Cover 45deg. (90deg. Low Corner Module),Buy,Int. Cabinet Sheathing (I),$7.65 ,MTO,HDC
-I86185,Interior Top Sheath (32in Sag Grill Module),Buy,Int. Cabinet Sheathing (I),$0.01 ,MTO,HDC
-I02879,Interior Bottom Sheath (32in Sag Grill Module),Buy,Int. Cabinet Sheathing (I),$15.37 ,MTO,HDC
-I03820,Interior Base Board (32in Sag Grill Module),Buy,Int. Cabinet Sheathing (I),$0.01 ,MTO,HDC
-I81449,"Backer Board, Door, (Beacon Side Module Std.)",Buy,Int. Cabinet Sheathing (I),$16.42 ,MTO,HDC
+S16626,Outer Top Sheath w/o Sink (Beacon),Buy,Ext. Cabinet Sheathing (S), $30.56 ,MTO,HDC
+S72207,Inner Top Sheath (Beacon),Buy,Ext. Cabinet Sheathing (S), $20.23 ,MTO,HDC
+S44754,Bottom Sheath (Beacon),Buy,Ext. Cabinet Sheathing (S), $47.22 ,MTO,HDC
+S34089,End Sheath (Beacon),Buy,Ext. Cabinet Sheathing (S), $30.72 ,MTO,HDC
+S49271,"Inner Side Sheath, Left (Beacon)",Buy,Ext. Cabinet Sheathing (S), $9.49 ,MTO,HDC
+S64453,"Inner Side Sheath, Right (Beacon)",Buy,Ext. Cabinet Sheathing (S), $10.29 ,MTO,HDC
+S46822,"Back Sheath, Accessory Kit B (Beacon)",Buy,Ext. Cabinet Sheathing (S), $60.59 ,MTO,HDC
+S92795,Outer Top Sheath w/Sink (Beacon),Buy,Ext. Cabinet Sheathing (S), $30.84 ,MTO,HDC
+S26496,"Back Sheath, Accessory Kit D (Beacon)",Buy,Ext. Cabinet Sheathing (S), $0.01 ,MTO,HDC
+S47899,"Top Sheath w/o Sink/Ice Bin, 24in wd. Low Module",Buy,Ext. Cabinet Sheathing (S), $29.83 ,MTO,HDC
+S76940,"Top Sheath with Sink/Ice Bin, 24in wd. Low Module",Buy,Ext. Cabinet Sheathing (S), $35.00 ,MTO,HDC
+S52166,"Bottom Sheath, 24in wd. Low Module",Buy,Ext. Cabinet Sheathing (S), $30.65 ,MTO,HDC
+S41502,"Side Sheath, 24in wd. Low Module",Buy,Ext. Cabinet Sheathing (S), $36.93 ,MTO,HDC
+S90669,"Back Sheath, 24in wd. Low Module (Solid)",Buy,Ext. Cabinet Sheathing (S), $43.89 ,MTO,HDC
+S39496,"Top Sheath w/o Sink/Ice Bin, 32in wd. High Module",Buy,Ext. Cabinet Sheathing (S), $29.83 ,MTO,HDC
+S68537,"Top Sheath with Sink/Ice Bin, 32in wd. High Module",Buy,Ext. Cabinet Sheathing (S), $35.00 ,MTO,HDC
+S43763,"Bottom Sheath, 32in wd. High Module",Buy,Ext. Cabinet Sheathing (S), $30.65 ,MTO,HDC
+S33099,"Side Sheath, 32in wd. High Module",Buy,Ext. Cabinet Sheathing (S), $36.93 ,MTO,HDC
+S73252,"Back Sheath, 32in wd. High Module, Accessory Kit B (LP Hole/Vent)",Buy,Ext. Cabinet Sheathing (S), $43.89 ,MTO,HDC
+S77760,"Back Sheath, 32in wd. High Module, Accessory Kit C (Power In Elec./Vent)",Buy,Ext. Cabinet Sheathing (S), $43.89 ,MTO,HDC
+S92689,"45deg. Top/Bottom Reinforcement Plate, 90deg. High Corner Module",Buy,Ext. Cabinet Sheathing (S), $10.51 ,MTO,HDC
+S92690,"Bottom Sheath, 90deg. High Corner Module",Buy,Ext. Cabinet Sheathing (S), $32.19 ,MTO,HDC
+S88423,"Top Sheath, 90deg. High Corner Module",Buy,Ext. Cabinet Sheathing (S), $31.42 ,MTO,HDC
+S82024,"Side Sheath, 90deg. High Corner Module",Buy,Ext. Cabinet Sheathing (S), $37.07 ,MTO,HDC
+S94822,"Corner Sheath, 90deg. High Corner Module",Buy,Ext. Cabinet Sheathing (S), $9.52 ,MTO,HDC
+S94823,"Corner Sheath Bracket, 90deg. High Corner Module",Buy,Ext. Cabinet Sheathing (S), $7.25 ,MTO,HDC
+S79891,"Back Sheath, 90deg. High Corner Module",Buy,Ext. Cabinet Sheathing (S), $40.73 ,MTO,HDC
+S97048,"Side Sheath, 25in Sag. Grill Module",Buy,Ext. Cabinet Sheathing (S), $40.63 ,MTO,HDC
+S17989,"Back Sheath, 25in Sag. Grill Module",Buy,Ext. Cabinet Sheathing (S), $48.99 ,MTO,HDC
+S97047,"Grill Support Brack Side, 25in Sag. Grill Module",Buy,Ext. Cabinet Sheathing (S), $7.36 ,MTO,HDC
+S97049,"Countertop Support Bracket, 25in Sag. Grill Module",Buy,Ext. Cabinet Sheathing (S), $12.59 ,MTO,HDC
+S94914,"Grill Support Brack Rear, 25in Sag. Grill Module",Buy,Ext. Cabinet Sheathing (S), $4.89 ,MTO,HDC
+S37876,"Back Sheath, 90deg. Low Corner Module",Buy,Ext. Cabinet Sheathing (S), $40.73 ,MTO,HDC
+S40009,"Side Sheath, 90deg. Low Corner Module",Buy,Ext. Cabinet Sheathing (S), $37.07 ,MTO,HDC
+S52807,"Corner Sheath, 90deg. Low Corner Module",Buy,Ext. Cabinet Sheathing (S), $9.52 ,MTO,HDC
+S52808,"Corner Sheath Bracket, 90deg. Low Corner Module",Buy,Ext. Cabinet Sheathing (S), $7.25 ,MTO,HDC
+S74797,"Top Sheath, 32in Sag. Grill Module",Buy,Ext. Cabinet Sheathing (S), $0.01 ,MTO,HDC
+S79063,"Bottom Sheath, 32in Sag. Grill Module",Buy,Ext. Cabinet Sheathing (S), $0.01 ,MTO,HDC
+S84832,"Back Sheath, 32in Sag. Grill Module",Buy,Ext. Cabinet Sheathing (S), $0.01 ,MTO,HDC
+S66266,"Grill Support Brack Side, 32in Sag. Grill Module",Buy,Ext. Cabinet Sheathing (S), $0.01 ,MTO,HDC
+S33690,Universal Reinforcement Plate (Upper & Lower),Buy,Ext. Cabinet Sheathing (S), $11.14 ,MTO,HDC
+S77145,"Back Sheath, 24in wd. Low Module (Sink)",Buy,Ext. Cabinet Sheathing (S), $0.01 ,MTO,HDC
+S68742,"Back Sheath, 32in wd. High Module (Sink)",Buy,Ext. Cabinet Sheathing (S), $43.89 ,MTO,HDC
+I51404,Interior Base Sheath (Beacon),Buy,Int. Cabinet Sheathing (I), $35.42 ,MTO,HDC
+I51975,Interior Base Board (Beacon),Buy,Int. Cabinet Sheathing (I), $8.09 ,MTO,HDC
+I40739,Interior Outer Vertical Wall (Beacon),Buy,Int. Cabinet Sheathing (I), $4.42 ,MTO,HDC
+I47138,Interior Outer Top Sheath w/o Sink/Ice Bin (Beacon),Buy,Int. Cabinet Sheathing (I), $22.09 ,MTO,HDC
+I23307,Interior Outer Top Sheath with Sink/Ice Bin (Beacon),Buy,Int. Cabinet Sheathing (I), $28.00 ,MTO,HDC
+I49271,Interior Inner Top Sheath (Beacon),Buy,Int. Cabinet Sheathing (I), $15.60 ,MTO,HDC
+I34340,Outer Vertical Corner Cover (Beacon),Buy,Int. Cabinet Sheathing (I), $3.99 ,MTO,HDC
+I34341,Inner Vertcal Corner Cover (Beacon),Buy,Int. Cabinet Sheathing (I), $3.71 ,MTO,HDC
+I34342,Inner Common Vertical Corner Cover (Beacon),Buy,Int. Cabinet Sheathing (I), $0.01 ,MTO,HDC
+I61804,Vertical Corner Cover (High Module),Buy,Int. Cabinet Sheathing (I), $4.34 ,MTO,HDC
+I61805,Interior Top Sheath (High Module),Buy,Int. Cabinet Sheathing (I), $23.98 ,MTO,HDC
+I90845,"Interior Top Sheath, Sink/Ice Bin (High Module)",Buy,Int. Cabinet Sheathing (I), $30.80 ,MTO,HDC
+I61806,Interior Bottom Sheath  (High Module),Buy,Int. Cabinet Sheathing (I), $21.52 ,MTO,HDC
+I73040,Interior Base Board  (High Module),Buy,Int. Cabinet Sheathing (I), $8.09 ,MTO,HDC
+I70207,Interior Top Sheath (Low Module),Buy,Int. Cabinet Sheathing (I), $23.98 ,MTO,HDC
+I99248,"Interior Top Sheath, Sink/Ice Bin (Low Module)",Buy,Int. Cabinet Sheathing (I), $30.80 ,MTO,HDC
+I70208,Interior Bottom Sheath (Low Module),Buy,Int. Cabinet Sheathing (I), $21.52 ,MTO,HDC
+I81443,Interior Base Board (Low Module),Buy,Int. Cabinet Sheathing (I), $8.09 ,MTO,HDC
+I87013,Vertical Corner Cover 45deg. (90deg. High Corner Module),Buy,Int. Cabinet Sheathing (I), $10.71 ,MTO,HDC
+I87014,Interior Top Sheath (90 deg. High Corner Module),Buy,Int. Cabinet Sheathing (I), $25.19 ,MTO,HDC
+I87015,Interior Bottom Sheath (90 deg. High Corner Module),Buy,Int. Cabinet Sheathing (I), $25.19 ,MTO,HDC
+I98249,Interior Base Board (90 deg. High Corner Module),Buy,Int. Cabinet Sheathing (I), $0.01 ,MTO,HDC
+I21233,Vertical Corner Cover (25in Sag. Grill Module),Buy,Int. Cabinet Sheathing (I), $3.58 ,MTO,HDC
+I44998,Vertical Corner Cover 45deg. (90deg. Low Corner Module),Buy,Int. Cabinet Sheathing (I), $10.71 ,MTO,HDC
+I86185,Interior Top Sheath (32in Sag Grill Module),Buy,Int. Cabinet Sheathing (I), $0.01 ,MTO,HDC
+I02879,Interior Bottom Sheath (32in Sag Grill Module),Buy,Int. Cabinet Sheathing (I), $21.52 ,MTO,HDC
+I03820,Interior Base Board (32in Sag Grill Module),Buy,Int. Cabinet Sheathing (I), $0.01 ,MTO,HDC
+I81449,"Backer Board, Door, (Beacon Side Module Std.)",Buy,Int. Cabinet Sheathing (I), $22.99 ,MTO,HDC
 T49372,Masonry Door Trim - Upper & Lower (Beacon),Buy,Trim (T), $-   ,MTO,Internal
 T49373,Masonry Door Trim - Side (Beacon),Buy,Trim (T), $-   ,MTO,Internal
 T13088,Inner Panel Interior Trim - Upper & Lower (Beacon),Buy,Trim (T), $-   ,MTO,Internal
@@ -147,6 +245,9 @@ B60404,"Upper & Lower Attachment Bracket, Light Post",Buy,Mounting & Acc. Parts 
 B53651,"Upper Bracket Plastic Insert, Light Post",Make,Mounting & Acc. Parts (B), $-   ,FAB,Internal
 B31101,"Base Mount, Light Post",Buy,Mounting & Acc. Parts (B), $-   ,MTO,NA
 B60405,"Support Plate, Light Post",Buy,Mounting & Acc. Parts (B), $-   ,MTO,NA
+B98493,"Countertop Reinforcement Plate, 25in Sag. High Grill",Buy,Mounting & Acc. Parts (B), $-   ,MTO,HDC
+B16521,"Accessory Bar Attachment Plate, 25in Sag High Grill",Buy,Mounting & Acc. Parts (B), $-   ,MTO,HDC
+B98732,"Countertop Reinforcement Plate, 32in Sag. High Grill",Buy,Mounting & Acc. Parts (B), $-   ,MTO,HDC
 R83220,Corrugated Cover,Buy,Packaging (R), $-   ,MTO,NA
 R27479,Corner Protectors,Buy,Packaging (R), $-   ,OTS,NA
 R20418,"1"" Styrofoam Sheet",Buy,Packaging (R), $-   ,OTS,NA
@@ -302,106 +403,6 @@ U23263,"Conv. Pkg. - Paper Towel Holder, Bottle Opener, Acc. Bar",Make,Accessori
 43735-01,"Finish Kit - B, 32in Sag. Grill High Module, LED Lighting",Make,Finish Kit (E), $-   ,ATO,Internal
 47701-01,"Finish Kit - B, 90deg. High Corner Module, LED Lighting",Make,Finish Kit (E), $-   ,ATO,Internal
 49953-01,"Finish Kit - B, 90deg. Low Corner Module, LED Lighting",Make,Finish Kit (E), $-   ,ATO,Internal
-K04980,"SikaBond Construction Adhesive, 29oz Tube",Buy,Adhesive,$0.82 ,OTS,Home Depot
-K04981,"Locktite Blue 242, 0.2oz Tube/12 Pack",Buy,Adhesive,$18.01 ,OTS,Home Depot
-K04982,"Gorilla Heavy Duty Construction Adhesive Ultimate, 9oz Tube",Buy,Adhesive,$1.51 ,OTS,Home Depot
-K04983,"Gorilla Max Strength Construction Adhesive Clear, 9oz Tube",Buy,Adhesive,$1.76 ,OTS,Home Depot
-K61430,GFRSCC Premix Cement,Buy,Concrete,$0.71 ,OTS,Trinic
-K61431,Pigment (Iron Black),Buy,Concrete,$4.25 ,OTS,Trinic
-K61432,Pigment (Deep Black),Buy,Concrete,$4.95 ,OTS,Trinic
-K61433,STAGE II Accelerator,Buy,Concrete,$2.74 ,OTS,Trinic
-K61435,"1/2"" Glass Fiber (13kg/28.7lbs)",Buy,Concrete,$3.37 ,OTS,GlobMarble
-K61436,"3/4"" Glass Fiber (9kg/19.8lbs)",Buy,Concrete,$3.37 ,OTS,Trinic
-K61437,Pol-Ease 2650 Mold Release,Buy,Concrete,$0.36 ,OTS,Trinic
-K99234,Polytek Mold Release (Pol-Ease),Buy,Solvent,$6.06 ,OTS,Medford
-K53583,"MICTUNING 15Amp 125V AC Port Plug with Heavy Duty Integrated Dual 20"" Extension Cord. Model MIC-EC-140",Buy,Electrical Switches & Recepticals,$28.90 ,OTS,MICTUNING
-K20115,"Aluminum J-Channel (144'' x 1-1/8"" x 5/8"" x 1/4"" x .270"")",Buy,Extrusion,$2.25 ,OTS,Eagle Aluminum
-K20116,"Aluminum Angle (144'' x 1-1/4"" x 1-1/4"" x 1/16"")",Buy,Extrusion,$2.76 ,OTS,Eagle Aluminum
-K20117,Aluminum Angle (144'' x 5/16'' x 1-1/2'' x 1/16''),Buy,Extrusion,$1.87 ,OTS,Eagle Aluminum
-K39476,"Adhesive Stud (M10), 316 SS, M10 x 1.5 mm Thread, 40mm L., 38mm D. Base",Buy,Hardware Fastener,$4.01 ,OTS,McMaster Carr
-K39477,"Flat Washer (M10), 316 SS, 10.5 mm ID, 18.0 mm OD",Buy,Hardware Fastener,$0.22 ,OTS,McMaster Carr
-K39478,"Hex Nut (M10), 316SS, M10 x 1.5 mm Thread Size",Buy,Hardware Fastener,$1.84 ,OTS,McMaster Carr
-K39479,"Lock Washer (M10), 316 SS, 10.7 mm ID, 16 mm OD",Buy,Hardware Fastener,$0.29 ,OTS,McMaster Carr
-K39480,"Rubber Washer (M10), 10.5 mm ID, 20 mm OD",Buy,Hardware Fastener,$0.46 ,OTS,McMaster Carr
-K39481,"Flat Spacer Washer (M10), 10.5 mm ID, 20mm OD",Buy,Hardware Fastener,$0.55 ,OTS,McMaster Carr
-K39529,"Flat Washer (1/2""), 316 SS, 0.531"" ID, 1.250"" OD",Buy,Hardware Fastener,$0.53 ,OTS,McMaster Carr
-K39530,"Threaded Stud, 1/2-13 x 4in., 316 SS",Buy,Hardware Fastener,$6.37 ,OTS,McMaster Carr
-K39531,"1/2-13 Thin-Profile Hex Lock Nut, 316 SS, 5/16"" H.",Buy,Hardware Fastener,$0.89 ,OTS,McMaster Carr
-K39532,"Rivet Domed Head, 5/32"" Diameter, for 0.126""-0.187"" Material Thickness",Buy,Hardware Fastener,$0.10 ,OTS,McMaster Carr
-K39533,"Rivet Domed Head, 5/32"" Diameter, for 0.251""-0.375"" Material Thickness",Buy,Hardware Fastener,$0.09 ,OTS,McMaster Carr
-K62699,Rigid Caster,Buy,Hardware Specialty,$7.33 ,OTS,Mapp Caster
-K62700,Swivel Caster,Buy,Hardware Specialty,$11.00 ,OTS,Mapp Caster
-K62702,Levelling Pad,Buy,Hardware Specialty,$10.55 ,OTS,JW Winco
-K39535,Panel Hole Plug (1.1/8),Buy,Hardware Fastener,$0.22 ,OTS,McMaster Carr
-K01267,"6mm Magnesium Oxide Sheet 4ft X 8ft X 1/4"" ",Buy,MGO Board,$0.78 ,OTS,Ambient
-K85421,Surface Mount Vent Panel,Buy,"SS Doors,Drawers, Acc.", $-   ,OTS,Amazon
-K41104,"HardieBacker Cement Backerboard, 1/4 x 3ft x 5ft",Buy,Cement Board,$0.87 ,OTS,Home Depot
-K98029,Pull Handle 116mm,Buy,Hardware Custom Item,$1.56 ,BTO,Foshan Builders Hardware Co
-K98030,Pull Handle 300mm,Buy,Hardware Custom Item,$2.41 ,BTO,Foshan Builders Hardware Co
-K98031,Pull Handle 400mm,Buy,Hardware Custom Item,$6.43 ,BTO,Foshan Builders Hardware Co
-K55515,Water In-Take & Waste Line Hook Up Panel,Buy,"Plumbing (Sink, Faucet, Comp.)",$21.75 ,OTS,B&B Molders
-K53586,"Journeyman-Pro 15 Amp 125 Volt NEMA 5-15R Receptacle Kit with Integrated 20"" Extension Cord + Waterproof Rubber Cover",Buy,Electrical Switches & Recepticals,$31.99 ,OTS,Journeyman-Pro
-K53584,On/Off Rocker Switch Assy. w/AC Piggyback 3ft Extension Cord ,Buy,Electrical Switches & Recepticals,$15.99 ,OTS,Amazon (PolyEnergy)
-K51008,"Drop-In Sink, Flange Mount, 15in w/Single Hole",Buy,"Plumbing (Sink, Faucet, Comp.)",$57.93 ,BTO,Prussia Sink
-K51009,"Bar sink faucet, Single Hole, 10in, Stainless, Single Cold ",Buy,"Plumbing (Sink, Faucet, Comp.)",$31.23 ,BTO,Aquacubic Sanitary Ware Co. Ltd
-K37936,"COB LED Strip, 12vdc 3.7watt, 304 Lumens, 3K Warm Light, IP65 Water Resistant",Buy,"Lighting (LED, Transformer, Wire)", $-   ,OTS,Aspect LED
-K37937,LED Power Transformer  ,Buy,"Lighting (LED, Transformer, Wire)", $-   ,OTS,Aspect LED
-K37938,"LED Alum. Track w/Clear Cover, 17mm x 8mm, 1 Meter",Buy,"Lighting (LED, Transformer, Wire)", $-   ,OTS,Muzata
-K37939,LED Track Corner Connector,Buy,"Lighting (LED, Transformer, Wire)", $-   ,OTS,Muzata
-K37940,LED Solderless Connector,Buy,"Lighting (LED, Transformer, Wire)", $-   ,OTS,Amazon/Visdoll
-K37941,"LED 18ga Wire, 100ft, 2 Wire, 12v/24v",Buy,"Lighting (LED, Transformer, Wire)", $-   ,OTS,Amazon/Tyumen
-K37942,LED Straight Power Connector,Buy,"Lighting (LED, Transformer, Wire)", $-   ,OTS,Aspect LED
-K37943,LED Wire Cover,Buy,"Lighting (LED, Transformer, Wire)", $-   ,OTS,Amazon/Allwin
-K37944,"LED Wire Cover Grommet - 1/4""",Buy,"Lighting (LED, Transformer, Wire)", $-   ,OTS,McMaster Carr
-K85422,"Paper Towel Holder, Under Cabinet Paper Towel Roll Holder for Kitchen, Self Adhesive or Drilling Wall Mount for Kitchen Paper Towel, Stainless Steel SUS304",Buy,"SS Doors,Drawers, Acc.",$10.81 ,OTS,Amazon
-K53585,"KUNCAN 15A AC Port Plug - 125V Power Inlet Socket with Triple 18 Inch Extension Cord, NEMA 5-15 Plug Flanged Inlet with Waterproof Cover Outdoor Extension Cable",Buy,Electrical Switches & Recepticals,$16.99 ,OTS,Amazon/KUNCAN
-K55516,Universal Drain Kit for Bathroom Sinks - SnappyTrap,Buy,"Plumbing (Sink, Faucet, Comp.)",$18.79 ,OTS,Home Depot/Snappy Trap
-K61482,"Rebar 3/8""D x 94""",Buy,Concrete,$0.56 ,OTS,Trinic
-K61483,"25 mm Basalt Reinforcing Mesh & Scrim for Concrete, 1sq Yd",Buy,Concrete,$30.26 ,OTS,GlobMarble
-K39584,"10-32 x 1.1/2"" Flat Head Phillips Screw, 18-8 SS, 82deg.",Buy,Hardware Fastener,$0.37 ,OTS,McMaster Carr
-K82674,PLA-CF - Black (14100) / Filament with spool / 1 kg,Buy,Polymer Filament,$40.04 ,OTS,Bambu Labs
-K20118,Aluminum Angle (1x1.5x.060x8ft),Buy,Extrusion,$3.42 ,OTS,McMaster Carr
-K10462,Eco-Etch Concrete Etcher,Buy,Solvent,$51.98 ,OTS,Eco Safety Pdts.
-K10463,Super Concrete Dissolver,Buy,Solvent,$52.99 ,OTS,Cleen Pdts
-K79317,"10-32 x 5/8L Female Threaded Round Standoff, Aluminum, 1/4"" OD",Buy,Hardware Specialty,$0.26 ,OTS,McMaster Carr
-K39582,"18-8Â Stainless Steel Hex HeadÂ Screw,Â 1/4""-20Â ThreadÂ Size,Â 2-1/2""Â Long,Â Fully Threaded",Buy,Hardware Fastener,$0.60 ,OTS,McMaster Carr
-K39583,"18-8 Stainless Steel Washer for 1/4"" Screw Size, General Purpose, 0.281"" ID, 0.625"" OD",Buy,Hardware Fastener,$0.11 ,OTS,McMaster Carr
-K63335,"59L (2.1CuFt) Refrigerator, Summit SPR314LOS",Buy,Appliance (Frefrigeration),$595.00 ,BTO,Summit
-K23498,"All Right 25"" LP Grill",Buy,Appliance (Cooking), $-   ,BTO,"Wuxi Allright Metal Products Co., Ltd."
-K23499,"All Right 32"" LP Grill",Buy,Appliance (Cooking), $-   ,BTO,"Wuxi Allright Metal Products Co., Ltd."
-K23500,Electric Grill Model EG Home S,Buy,Appliance (Cooking), $-   ,BTO,Okpiro 
-K39536,"10-32 Flat Head Phillips Head Screw, 7/16"" Long, SS, Undercut",Buy,Hardware Fastener,$0.14 ,OTS,McMaster Carr
-K39534,"Press-Fit Nut for Sheet Metal, 1/4""-20, for 0.047"" Minimum Panel Thickness",Buy,Hardware Fastener,$0.43 ,OTS,McMaster Carr
-K39580,"Press-Fit Nut for Sheet Metal, 8-32, for 0.040"" Minimum Panel Thickness",Buy,Hardware Fastener,$0.19 ,OTS,McMaster Carr
-K39586,"1/4-20 Hex Head Screw, 316 Stainless Steel, 5/8"" Long",Buy,Hardware Fastener,$0.53 ,OTS,McMaster Carr
-K39587,"1/4"" Flat Washer, 316 Stainless Steel",Buy,Hardware Fastener,$0.12 ,OTS,McMaster Carr
-K39588,"10-32 x 3/8"" Pan Head Phillips Screw, SS 316",Buy,Hardware Fastener,$0.33 ,OTS,McMaster Carr
-K39589,"8-32 x 1/2"" Pan Head Phillips Screw, SS 316",Buy,Hardware Fastener,$0.15 ,OTS,McMaster Carr
-K39633,"Press-Fit Nut for Sheet Metal, 10-32, for 0.040"" Minimum Panel Thickness",Buy,Hardware Fastener,$0.28 ,OTS,McMaster Carr
-K39634,"8-32 x 3/8"" Pan Head Phillips Screw, SS 316",Buy,Hardware Fastener,$0.14 ,OTS,McMaster Carr
-K39635,"M10 x 30mm, 18-8 Stainless Steel Coupling Nut",Buy,Hardware Fastener,$3.58 ,OTS,McMaster Carr
-K39636,"M10 x 35mm, 18-8 Stainless Steel Flanged Button Head Screw",Buy,Hardware Fastener,$2.41 ,OTS,McMaster Carr
-K39637,"10-32 x 25/64, Zinc Alloy Tapping Inserts for Softwood",Buy,Hardware Fastener,$0.23 ,OTS,McMaster Carr
-K79364,"Dry-Running Nylon Sleeve Bearing, 1/4"" Shaft Diameter, 1/2"" Long, 1/2"" OD x 1/16"" Thick Flange",Buy,Hardware Specialty,$2.46 ,OTS,McMaster Carr
-K39528,"10-32 Flat Head Phillips Head Screw, 1/2"" Long, SS, Undercut",Buy,Hardware Fastener,$0.15 ,OTS,McMaster Carr
-K25954,"Offset Piano Hinge, 304 SS",Buy,Hardware Fastener,$18.51 ,MTO,HDC
-K39475,"Split Pin, 1/8"" Diam. X 3/4""L., 18-8 SS",Buy,Hardware Fastener,$0.15 ,OTS,McMaster Carr
-K79312,"Aluminum Unthreaded Spacer, 5/8"" OD, 1/2"" Long, for 1/4"" Screw Size",Buy,Hardware Specialty,$2.40 ,OTS,McMaster Carr
-K39482,"Press-Fit Studs 18-8 Stainless Steel, 8-32 Thread, 1/2"" Long, PEM Fhs832-8",Buy,Hardware Fastener,$0.31 ,OTS,McMaster Carr
-K39483,"8-32 Acorn Nut, SS",Buy,Hardware Fastener,$1.00 ,OTS,McMaster Carr
-K39527,"#8 Flat Washer, SS",Buy,Hardware Fastener,$0.05 ,OTS,McMaster Carr
-K39638,#8 Split Lock Washer,Buy,Hardware Fastener,$0.06 ,OTS,McMaster Carr
-K63336,"38L Refrigerator, Sunnai SY-12",Buy,Appliance (Frefrigeration),$349.86 ,BTO,"Sunnai Electrical Appliance Co.,Ltd"
-K63337,"63L Refrigerator, Sunnai SY-63",Buy,Appliance (Frefrigeration),$408.80 ,BTO,"Sunnai Electrical Appliance Co.,Ltd"
-K80914,Ice Bin with Swing Cover (355*305*457mm),Buy,"SS Doors,Drawers, Acc.",$122.64 ,BTO,Kinbin Hotel Equipment Mfg Co. Ltd.
-K80915,Built in two layer kitchen drawer cabinet (345.5*660*490mm),Buy,"SS Doors,Drawers, Acc.",$121.94 ,BTO,Kinbin Hotel Equipment Mfg Co. Ltd.
-K80916,Built in trash kitchen drawer cabinet (345.5*660*490mm),Buy,"SS Doors,Drawers, Acc.",$112.00 ,BTO,Kinbin Hotel Equipment Mfg Co. Ltd.
-K80917,Built in Single Door (355*508*46mm),Buy,"SS Doors,Drawers, Acc.",$50.82 ,BTO,Kinbin Hotel Equipment Mfg Co. Ltd.
-K80918,Built in Single Door (432*610*46mm),Buy,"SS Doors,Drawers, Acc.",$55.72 ,BTO,Kinbin Hotel Equipment Mfg Co. Ltd.
-K80919,Drop In Double Door (751*532*95mm),Buy,"SS Doors,Drawers, Acc.",$73.50 ,BTO,Kinbin Hotel Equipment Mfg Co. Ltd.
-B98493,"Countertop Reinforcement Plate, 25in Sag. High Grill",Buy,Mounting & Acc. Parts (B), $-   ,MTO,HDC
-B16521,"Accessory Bar Attachment Plate, 25in Sag High Grill",Buy,Mounting & Acc. Parts (B), $-   ,MTO,HDC
-B98732,"Countertop Reinforcement Plate, 32in Sag. High Grill",Buy,Mounting & Acc. Parts (B), $-   ,MTO,HDC
 02017-01,"32in Wide High Mod., 63L Refrigerator",Make,Saleable SKU, $-   ,ATO,Internal
 02288-01,90deg. High Corner Module w/Light Post,Make,Saleable SKU, $-   ,ATO,Internal
 02469-01,90deg. Low Corner Module w/Light Post,Make,Saleable SKU, $-   ,ATO,Internal
