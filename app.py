@@ -3,7 +3,7 @@ import pandas as pd
 import re
 import os
 
-st.set_page_config(page_title="BOM Tool v6.9", layout="wide")
+st.set_page_config(page_title="BOM Tool v7.0", layout="wide")
 
 # --- 1. FILENAME CONFIGURATION ---
 SKU_FILE = "L0&L1 Skus..xlsx - Sheet1.csv" 
@@ -11,59 +11,64 @@ MASTER_FILE = "Item_Master_v4_Template.csv"
 LINKS_FILE = "BOM_Links_v4_Template.csv"
 
 def clean_currency(value):
+    """Handles $, commas, spaces, and the '$-' placeholder found in your CSV."""
     if pd.isna(value) or value == "": return 0.0
     if isinstance(value, str):
+        # Remove everything except numbers and decimals
         cleaned = re.sub(r'[^\d.]', '', value)
-        return float(cleaned) if cleaned else 0.0
+        try:
+            return float(cleaned) if cleaned else 0.0
+        except ValueError:
+            return 0.0
     return float(value)
 
-def super_clean_df(df):
-    """
-    Cleans dataframes by stripping spaces from headers and values.
-    This prevents 'Column Not Found' errors caused by Excel formatting.
-    """
-    df.columns = [str(c).strip() for c in df.columns]
-    df.columns = [" ".join(str(c).split()) for c in df.columns]
-    # Use map instead of applymap for modern pandas compatibility
-    df = df.map(lambda x: x.strip() if isinstance(x, str) else x)
+def robust_clean(df):
+    """Cleans headers and string data safely across all Pandas versions."""
+    # Clean headers: remove invisible spaces and newlines
+    df.columns = [re.sub(r'\s+', ' ', str(c).strip()) for c in df.columns]
+    
+    # Clean cell data: strip whitespace from all text columns
+    for col in df.columns:
+        if df[col].dtype == "object":
+            df[col] = df[col].astype(str).str.strip()
     return df
 
 # --- 2. FILE CHECK ---
 if not all(os.path.exists(f) for f in [SKU_FILE, MASTER_FILE, LINKS_FILE]):
-    st.error("🚨 Missing source files in GitHub directory. Please ensure all CSVs are uploaded.")
+    st.error("🚨 Missing source files. Ensure all CSVs are named correctly on GitHub.")
     st.stop()
 
 try:
     # --- 3. DATA LOADING ---
-    df_master = super_clean_df(pd.read_csv(MASTER_FILE, encoding='utf-8-sig'))
-    df_links = super_clean_df(pd.read_csv(LINKS_FILE, encoding='utf-8-sig'))
-    df_sku_list = super_clean_df(pd.read_csv(SKU_FILE, encoding='utf-8-sig'))
+    df_master = robust_clean(pd.read_csv(MASTER_FILE, encoding='utf-8-sig'))
+    df_links = robust_clean(pd.read_csv(LINKS_FILE, encoding='utf-8-sig'))
+    df_sku_list = robust_clean(pd.read_csv(SKU_FILE, encoding='utf-8-sig'))
 
-    # Clean Costs & Ensure Procurement columns exist (v6.7+ requirement)
-    if 'Unit Cost' in df_master.columns:
-        df_master['Unit Cost'] = df_master['Unit Cost'].apply(clean_currency)
-    else:
-        st.error("Column 'Unit Cost' not found in Item Master. Check for spelling/spaces.")
-        st.stop()
+    # Process Master Data
+    cost_col = 'Unit Cost' # The robust_clean handles the extra spaces now
+    if cost_col not in df_master.columns:
+        # Fallback if the header is completely different
+        cost_col = df_master.columns[4] 
 
+    df_master['Unit Cost Cleaned'] = df_master[cost_col].apply(clean_currency)
+    
+    # Ensure Procurement columns exist
     for col in ['Fulfillment', 'Supplier']:
         if col not in df_master.columns:
-            df_master[col] = ""
+            df_master[col] = "Not Set"
 
     item_details = df_master.set_index('Part No.').to_dict('index')
 
-    # Process Links Data - Handle 'UM' or 'UOM' variations
-    # We map by index to ensure stability: 0:Parent, 1:Child, 2:Qty, 3:UOM
-    df_links.columns = ['Parent Part', 'Child Part', 'Qty Per', 'UOM'] + list(df_links.columns[4:])
-    
+    # Process Links Data - Map by index to handle 'UM' vs 'UOM' variations
+    # 0:Parent, 1:Child, 2:Qty, 3:UOM
     parent_map = {}
     for _, row in df_links.iterrows():
-        p = str(row['Parent Part'])
+        p = str(row.iloc[0]) # Parent Part
         if p not in parent_map: parent_map[p] = []
         parent_map[p].append({
-            'child': str(row['Child Part']),
-            'qty': pd.to_numeric(row['Qty Per'], errors='coerce') or 1.0,
-            'uom': str(row['UOM']) if pd.notna(row['UOM']) else "Ea."
+            'child': str(row.iloc[1]), # Child Part
+            'qty': pd.to_numeric(row.iloc[2], errors='coerce') or 1.0,
+            'uom': str(row.iloc[3]) if pd.notna(row.iloc[3]) else "Ea."
         })
 
     # --- 4. UI SIDEBAR ---
@@ -78,12 +83,10 @@ try:
     }
 
     id_col, desc_col = mapping[ui_option]
-    
-    # Filter out empty rows from SKU list
     sku_options = []
     if id_col in df_sku_list.columns:
-        filtered_sku = df_sku_list[df_sku_list[id_col].notna()]
-        sku_options = [f"{row[id_col]} | {row[desc_col]}" for _, row in filtered_sku.drop_duplicates(subset=[id_col]).iterrows() if str(row[id_col]).lower() != 'nan']
+        valid_skus = df_sku_list[df_sku_list[id_col].notna()]
+        sku_options = [f"{row[id_col]} | {row[desc_col]}" for _, row in valid_skus.drop_duplicates(subset=[id_col]).iterrows() if str(row[id_col]).lower() != 'nan']
 
     selected_label = st.selectbox(f"Select {ui_option}", ["-- Select --"] + sorted(sku_options))
 
@@ -113,8 +116,8 @@ try:
                     'Qty Per': item['qty'],
                     'UOM': item['uom'],
                     'Total Req.': total_qty,
-                    'Unit Cost': det.get('Unit Cost', 0.0),
-                    'Ext. Cost': det.get('Unit Cost', 0.0) * total_qty
+                    'Unit Cost': det.get('Unit Cost Cleaned', 0.0),
+                    'Ext. Cost': det.get('Unit Cost Cleaned', 0.0) * total_qty
                 })
                 explode(child_id, depth + 1, total_qty)
 
@@ -122,8 +125,6 @@ try:
 
         if waterfall:
             df_wf = pd.DataFrame(waterfall)
-            
-            # Metrics
             st.metric("Total Roll-up Cost", f"${df_wf['Ext. Cost'].sum():,.2f}")
 
             # Display Table
@@ -132,19 +133,15 @@ try:
             df_disp['Ext. Cost'] = df_disp['Ext. Cost'].apply(lambda x: f"${x:,.2f}")
             st.dataframe(df_disp, use_container_width=True, hide_index=True)
             
-            # --- 6. EXPORT WITH HEADER ROWS ---
+            # --- 6. EXPORT ---
             export_cols = ['BOM Level', 'Parent', 'Part No.', 'Description', 'Category', 'Make/Buy', 'Fulfillment', 'Supplier', 'Qty Per', 'UOM', 'Total Req.', 'Unit Cost', 'Ext. Cost']
-            
-            header_str = f"Assembly Number:, {selected_sku}\n"
-            header_str += f"Description:, {selected_desc}\n\n"
-            
+            header_str = f"Assembly Number:, {selected_sku}\nDescription:, {selected_desc}\n\n"
             table_str = df_wf[export_cols].to_csv(index=False)
-            full_csv_str = header_str + table_str
+            csv_data = (header_str + table_str).encode('utf-8-sig')
             
-            csv_data = full_csv_str.encode('utf-8-sig')
-            st.download_button(label="📥 Download Extended BOM with Header", data=csv_data, file_name=f"BOM_Export_{selected_sku}.csv", mime="text/csv")
+            st.download_button(label="📥 Download Extended BOM", data=csv_data, file_name=f"BOM_{selected_sku}.csv", mime="text/csv")
         else:
-            st.warning(f"⚠️ No components found for {selected_sku}. Verify this ID exists in the BOM Links file.")
+            st.warning(f"⚠️ No components found for {selected_sku}. Check if this ID is in the Parent column of your Links file.")
 
 except Exception as e:
-    st.error(f"Critical Application Error: {e}")
+    st.error(f"Application Error: {e}")
