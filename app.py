@@ -3,127 +3,139 @@ import pandas as pd
 import re
 import os
 
-st.set_page_config(page_title="BOM Tool v8.4", layout="wide")
+st.set_page_config(page_title="BOM Tool v6.8", layout="wide")
 
-# --- 1. ROBUST NUMERIC CONVERTER ---
-def force_numeric(val):
-    """Strips $, commas, and spaces to ensure a math-ready float."""
-    if pd.isna(val) or str(val).strip() in ["", "-", "$-", "$ -"]:
-        return 0.0
-    # Remove everything except numbers and the decimal point
-    clean_str = re.sub(r'[^\d.]', '', str(val))
-    try:
-        return float(clean_str) if clean_str else 0.0
-    except:
-        return 0.0
+# --- 1. FILENAME CONFIGURATION ---
+SKU_FILE = "L0&L1 Skus..xlsx - Sheet1.csv" 
+MASTER_FILE = "Item_Master_v4_Template.csv" 
+LINKS_FILE = "BOM_Links_v4_Template.csv"
 
-# --- 2. DATA LOADING ENGINE ---
-def load_and_clean_file(pattern):
-    fname = next((f for f in os.listdir('.') if pattern.lower() in f.lower() and f.endswith('.csv')), None)
-    if not fname:
-        return None
-    
-    # Read with utf-8-sig to handle Excel artifacts
-    df = pd.read_csv(fname, encoding='utf-8-sig', on_bad_lines='skip')
-    
-    # Standardize Headers: Strip spaces and remove 'Unnamed' columns
-    df.columns = [str(c).strip() for c in df.columns]
-    df = df.loc[:, ~df.columns.str.contains('^Unnamed|^$')]
-    
-    # Standardize Data: Strip spaces from all text cells
-    df = df.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
+def clean_currency(value):
+    if pd.isna(value) or value == "": return 0.0
+    if isinstance(value, str):
+        cleaned = re.sub(r'[^\d.]', '', value)
+        return float(cleaned) if cleaned else 0.0
+    return float(value)
+
+def super_clean_df(df):
+    df.columns = [" ".join(str(c).split()) for c in df.columns]
+    df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
     return df
 
-# --- 3. MAIN APPLICATION ---
-st.title("🛠️ BOM Professional v8.4")
+# --- 2. FILE CHECK ---
+if not all(os.path.exists(f) for f in [SKU_FILE, MASTER_FILE, LINKS_FILE]):
+    st.error("🚨 Missing source files in GitHub directory.")
+    st.stop()
 
 try:
-    df_m = load_and_clean_file("Item_Master")
-    df_l = load_and_clean_file("BOM_Links")
-    df_s = load_and_clean_file("L0&L1 Skus")
+    # --- 3. DATA LOADING ---
+    df_master = super_clean_df(pd.read_csv(MASTER_FILE, encoding='utf-8-sig'))
+    df_links = super_clean_df(pd.read_csv(LINKS_FILE, encoding='utf-8-sig'))
+    df_sku_list = super_clean_df(pd.read_csv(SKU_FILE, encoding='utf-8-sig'))
 
-    if any(x is None for x in [df_m, df_l, df_s]):
-        st.error("🚨 Missing Files! Ensure 'Item_Master', 'BOM_Links', and 'L0&L1 Skus' are in your GitHub folder.")
-        st.stop()
+    # Clean Costs & Ensure Procurement columns exist
+    df_master['Unit Cost'] = df_master['Unit Cost'].apply(clean_currency)
+    for col in ['Fulfillment', 'Supplier']:
+        if col not in df_master.columns:
+            df_master[col] = ""
 
-    # Pre-process Costs
-    cost_col = next((c for c in df_m.columns if "Cost" in c), "Unit Cost")
-    df_m['Math_Cost'] = df_m[cost_col].apply(force_numeric)
+    item_details = df_master.set_index('Part No.').to_dict('index')
+
+    # Process Links Data
+    df_links.columns = ['Parent Part', 'Child Part', 'Qty Per', 'UOM'] + list(df_links.columns[4:])
     
-    # Create Lookups
-    master_lookup = df_m.set_index('Part No.').to_dict('index')
-    
-    # Create Parent-Child Tree
-    bom_tree = {}
-    for _, row in df_l.iterrows():
-        p = str(row.iloc[0]) # Parent
-        if p not in bom_tree: bom_tree[p] = []
-        bom_tree[p].append({
-            'child': str(row.iloc[1]),
-            'qty': pd.to_numeric(row.iloc[2], errors='coerce') or 1.0,
-            'uom': str(row.iloc[3]) if len(row) > 3 else "Ea."
+    parent_map = {}
+    for _, row in df_links.iterrows():
+        p = str(row['Parent Part'])
+        if p not in parent_map: parent_map[p] = []
+        parent_map[p].append({
+            'child': str(row['Child Part']),
+            'qty': pd.to_numeric(row['Qty Per'], errors='coerce') or 1.0,
+            'uom': str(row['UOM']) if pd.notna(row['UOM']) else "Ea."
         })
 
-    # --- 4. NAVIGATION ---
-    cats = {
-        "Saleable SKUs": ("Saleable Sku", "Saleable Sku Description"),
-        "Base Assemblies": ("Base Assy Kit", "Base Assy Kit Description"),
-        "Countertops": ("Countertop Assy Kit", "Countertop Assy Kit Description"),
-        "Cladding": ("Cladding Assy Kit", "Cladding Assy Kit Description")
+    # --- 4. UI SIDEBAR ---
+    ui_option = st.sidebar.radio("Category:", ["Option 1: Saleable SKUs", "Option 2: Base Assemblies", "Option 3: Countertop Assemblies", "Option 4: Cladding Assemblies", "Option 5: Finish Kits"])
+    
+    mapping = {
+        "Option 1: Saleable SKUs": ("Saleable Sku", "Saleable Sku Description"),
+        "Option 2: Base Assemblies": ("Base Assy Kit", "Base Assy Kit Description"),
+        "Option 3: Countertop Assemblies": ("Countertop Assy Kit", "Countertop Assy Kit Description"),
+        "Option 4: Cladding Assemblies": ("Cladding Assy Kit", "Cladding Assy Kit Description"),
+        "Option 5: Finish Kits": ("Finish Kit", "Finish Kit Description")
     }
-    view = st.sidebar.selectbox("Category", list(cats.keys()))
-    id_f, desc_f = cats[view]
 
-    # Generate Selector
-    options = []
-    if id_f in df_s.columns:
-        valid = df_s[df_s[id_f].notna() & (df_s[id_f] != "")]
-        for _, r in valid.drop_duplicates(subset=[id_f]).iterrows():
-            options.append(f"{r[id_f]} | {r.get(desc_f, 'N/A')}")
+    id_col, desc_col = mapping[ui_option]
+    sku_options = [f"{row[id_col]} | {row[desc_col]}" for _, row in df_sku_list.drop_duplicates(subset=[id_col]).iterrows() if str(row[id_col]).lower() != 'nan']
 
-    choice = st.selectbox(f"Select {view}", ["-- Select --"] + sorted(options))
+    selected_label = st.selectbox(f"Select {ui_option}", ["-- Select --"] + sorted(sku_options))
 
-    if choice != "-- Select --":
-        sel_id = choice.split(" | ")[0].strip()
+    if selected_label != "-- Select --":
+        parts = selected_label.split(" | ")
+        selected_sku = parts[0].strip()
+        selected_desc = parts[1].strip() if len(parts) > 1 else "N/A"
         
-        # --- 5. EXPLOSION ENGINE ---
-        bom_output = []
-        def explode(pid, depth=1, mult=1):
-            if depth > 12: return
-            for item in bom_tree.get(pid, []):
-                cid = item['child']
+        # --- 5. BOM EXPLOSION ---
+        waterfall = []
+        def explode(parent_id, depth=1, mult=1):
+            for item in parent_map.get(parent_id, []):
+                child_id = item['child']
                 total_qty = mult * item['qty']
-                meta = master_lookup.get(cid, {})
+                det = item_details.get(child_id, {})
                 
-                bom_output.append({
-                    'Level': depth,
-                    'Parent': pid,
-                    'Part No.': cid,
-                    'Description': meta.get('Part Description', 'N/A'),
-                    'Total Qty': total_qty,
+                waterfall.append({
+                    'BOM Level': depth,
+                    'Parent': parent_id,
+                    'Part No.': child_id,
+                    'Indented': "." * depth + child_id,
+                    'Description': det.get('Part Description', 'N/A'),
+                    'Category': det.get('Category', 'N/A'),
+                    'Make/Buy': det.get('Make/Buy', 'N/A'),
+                    'Fulfillment': det.get('Fulfillment', ''),
+                    'Supplier': det.get('Supplier', ''),
+                    'Qty Per': item['qty'],
                     'UOM': item['uom'],
-                    'Unit Cost': meta.get('Math_Cost', 0.0),
-                    'Ext. Cost': meta.get('Math_Cost', 0.0) * total_qty
+                    'Total Req.': total_qty,
+                    'Unit Cost': det.get('Unit Cost', 0.0),
+                    'Ext. Cost': det.get('Unit Cost', 0.0) * total_qty
                 })
-                explode(cid, depth + 1, total_qty)
+                explode(child_id, depth + 1, total_qty)
 
-        explode(sel_id)
+        explode(selected_sku)
 
-        if bom_output:
-            res_df = pd.DataFrame(bom_output)
-            st.metric("Total Roll-up Cost", f"${res_df['Ext. Cost'].sum():,.2f}")
+        if waterfall:
+            df_wf = pd.DataFrame(waterfall)
             
-            # Format display
-            disp = res_df.copy()
-            disp['Unit Cost'] = disp['Unit Cost'].map("${:,.2f}".format)
-            disp['Ext. Cost'] = disp['Ext. Cost'].map("${:,.2f}".format)
-            st.dataframe(disp, use_container_width=True, hide_index=True)
+            # Metrics
+            st.metric("Total Roll-up Cost", f"${df_wf['Ext. Cost'].sum():,.2f}")
+
+            # Display Table
+            df_disp = df_wf.copy()
+            df_disp['Unit Cost'] = df_disp['Unit Cost'].apply(lambda x: f"${x:,.2f}")
+            df_disp['Ext. Cost'] = df_disp['Ext. Cost'].apply(lambda x: f"${x:,.2f}")
+            st.dataframe(df_disp, use_container_width=True, hide_index=True)
             
-            # Export
-            st.download_button("📥 Download BOM", res_df.to_csv(index=False).encode('utf-8-sig'), f"BOM_{sel_id}.csv")
+            # --- 6. EXPORT WITH HEADER ROWS ---
+            export_cols = ['BOM Level', 'Parent', 'Part No.', 'Description', 'Category', 'Make/Buy', 'Fulfillment', 'Supplier', 'Qty Per', 'UOM', 'Total Req.', 'Unit Cost', 'Ext. Cost']
+            
+            # Construct the CSV as a string first
+            header_str = f"Assembly Number:, {selected_sku}\n"
+            header_str += f"Description:, {selected_desc}\n\n"
+            
+            table_str = df_wf[export_cols].to_csv(index=False)
+            full_csv_str = header_str + table_str
+            
+            # Encode with utf-8-sig so Excel handles the comma-separated metadata correctly
+            csv_data = full_csv_str.encode('utf-8-sig')
+            
+            st.download_button(
+                label="📥 Download Extended BOM with Header", 
+                data=csv_data, 
+                file_name=f"BOM_Export_{selected_sku}.csv", 
+                mime="text/csv"
+            )
         else:
-            st.warning(f"No components found for {sel_id}. Check that this ID exists in the 'Parent Part' column of your Links file.")
+            st.warning("⚠️ No components found for this selection.")
 
 except Exception as e:
-    st.error(f"System Error: {e}")
-    st.info("Technical Detail: Check if your CSV files have duplicate 'Part No.' entries with different data.")
+    st.error(f"Error: {e}")
