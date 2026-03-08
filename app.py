@@ -3,135 +3,132 @@ import pandas as pd
 import re
 import os
 
-st.set_page_config(page_title="BOM Tool v8.5", layout="wide")
+st.set_page_config(page_title="BOM Pro v9.0", layout="wide")
 
-# --- 1. THE "CLEANING" ENGINE ---
-def load_and_sanitize(pattern):
-    # Locate the file even with double dots or extra extensions
-    fname = next((f for f in os.listdir('.') if pattern.lower() in f.lower() and f.endswith('.csv')), None)
-    if not fname:
-        return None
+# --- 1. CACHED DATA ENGINE (Makes it 10x Faster) ---
+@st.cache_data(ttl=3600)
+def load_all_data():
+    def get_file(pattern):
+        return next((f for f in os.listdir('.') if pattern.lower() in f.lower() and f.endswith('.csv')), None)
     
-    # Read with utf-8-sig to clear Excel's hidden BOM markers
-    df = pd.read_csv(fname, encoding='utf-8-sig', on_bad_lines='skip')
-    
-    # TRAP 1: Strip invisible spaces from column headers
-    df.columns = [str(c).strip() for c in df.columns]
-    
-    # TRAP 2: Delete "Ghost Columns" caused by trailing commas in CSV
-    df = df.loc[:, ~df.columns.str.contains('^Unnamed|^$')]
-    
-    # TRAP 3: Strip invisible spaces from all text cells
-    df = df.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
-    return df
-
-def to_float(val):
-    """Converts strings like '$0.82' or '0' into 0.0 or a number."""
-    if pd.isna(val) or str(val).strip() in ["", "-", "$-", "$ -"]:
-        return 0.0
-    # Keep only numbers and decimal points
-    clean_str = re.sub(r'[^\d.]', '', str(val))
-    try:
-        return float(clean_str) if clean_str else 0.0
-    except:
-        return 0.0
-
-# --- 2. LOAD DATA ---
-st.title("🛠️ BOM Professional v8.5")
-
-try:
-    df_m = load_and_sanitize("Item_Master")
-    df_l = load_and_sanitize("BOM_Links")
-    df_s = load_and_sanitize("L0&L1 Skus")
-
-    if any(x is None for x in [df_m, df_l, df_s]):
-        st.error("🚨 Missing Files! Ensure CSVs are uploaded to GitHub with correct names.")
-        st.stop()
-
-    # --- 3. BUILD LOOKUP TABLES ---
-    # Find the Unit Cost column regardless of hidden characters
-    cost_col = next((c for c in df_m.columns if "Cost" in c), "Unit Cost")
-    df_m['Clean_Price'] = df_m[cost_col].apply(to_float)
-    
-    master_dict = df_m.set_index('Part No.').to_dict('index')
-
-    # Build the BOM Tree (Parent -> List of Children)
-    bom_tree = {}
-    for _, row in df_l.iterrows():
-        parent = str(row.iloc[0]) # Column 1: Parent Part
-        if parent not in bom_tree: bom_tree[parent] = []
-        bom_tree[parent].append({
-            'child_id': str(row.iloc[1]), # Column 2: Child Part
-            'qty_per': pd.to_numeric(row.iloc[2], errors='coerce') or 1.0, # Column 3
-            'uom': str(row.iloc[3]) if len(row) > 3 else "Ea." # Column 4
-        })
-
-    # --- 4. NAVIGATION & SELECTION ---
-    categories = {
-        "Saleable SKUs": ("Saleable Sku", "Saleable Sku Description"),
-        "Base Assemblies": ("Base Assy Kit", "Base Assy Kit Description"),
-        "Countertops": ("Countertop Assy Kit", "Countertop Assy Kit Description"),
-        "Cladding": ("Cladding Assy Kit", "Cladding Assy Kit Description")
+    files = {
+        "master": get_file("Item_Master"),
+        "links": get_file("BOM_Links"),
+        "skus": get_file("L0&L1 Skus")
     }
-    mode = st.sidebar.selectbox("Category View", list(categories.keys()))
-    id_key, desc_key = categories[mode]
+    
+    if None in files.values():
+        return None, None, None
 
-    sku_options = []
-    if id_key in df_s.columns:
-        df_valid = df_s[df_s[id_key].notna() & (df_s[id_key] != "")]
-        for _, row in df_valid.drop_duplicates(subset=[id_key]).iterrows():
-            sku_options.append(f"{row[id_key]} | {row.get(desc_key, 'N/A')}")
+    # Load & Clean
+    df_m = pd.read_csv(files["master"], encoding='utf-8-sig', on_bad_lines='skip')
+    df_l = pd.read_csv(files["links"], encoding='utf-8-sig', on_bad_lines='skip')
+    df_s = pd.read_csv(files["skus"], encoding='utf-8-sig', on_bad_lines='skip')
 
-    target_sku = st.selectbox(f"Select {mode}", ["-- Select --"] + sorted(sku_options))
+    for df in [df_m, df_l, df_s]:
+        df.columns = [str(c).strip() for c in df.columns]
+        # Remove ghost columns
+        df.drop(columns=[c for c in df.columns if 'Unnamed' in c or c == ''], inplace=True)
+        # Strip all text
+        for col in df.select_dtypes(include=['object']):
+            df[col] = df[col].str.strip()
 
-    if target_sku != "-- Select --":
-        sel_id = target_sku.split(" | ")[0].strip()
-        sel_desc = target_sku.split(" | ")[1].strip()
+    # Pre-clean Costs
+    def to_num(val):
+        if pd.isna(val) or str(val).strip() in ["", "-", "$-"]: return 0.0
+        n = re.sub(r'[^\d.]', '', str(val))
+        return float(n) if n else 0.0
 
-        # --- 5. EXPLOSION ENGINE ---
-        exploded_data = []
+    cost_col = next((c for c in df_m.columns if "Cost" in c), "Unit Cost")
+    df_m['Math_Cost'] = df_m[cost_col].apply(to_num)
+    
+    return df_m, df_l, df_s
+
+# --- 2. INITIALIZATION ---
+st.title("🚀 BOM Professional v9.0")
+df_m, df_l, df_s = load_all_data()
+
+if df_m is None:
+    st.error("🚨 Missing core files in GitHub. Check filenames.")
+    st.stop()
+
+# Build dictionaries
+master_map = df_m.set_index('Part No.').to_dict('index')
+bom_tree = {}
+for _, row in df_l.iterrows():
+    p = str(row.iloc[0])
+    if p not in bom_tree: bom_tree[p] = []
+    bom_tree[p].append({
+        'c': str(row.iloc[1]), 
+        'q': pd.to_numeric(row.iloc[2], errors='coerce') or 1.0,
+        'u': str(row.iloc[3]) if len(row) > 3 else "Ea."
+    })
+
+# --- 3. NAVIGATION (Fixed Categories) ---
+st.sidebar.header("Navigation")
+# Dynamically check for columns in your L0&L1 file
+available_cols = df_s.columns.tolist()
+cat_config = {
+    "Saleable SKUs": ("Saleable Sku", "Saleable Sku Description"),
+    "Base Assemblies": ("Base Assy Kit", "Base Assy Kit Description"),
+    "Countertops": ("Countertop Assy Kit", "Countertop Assy Kit Description"),
+    "Cladding": ("Cladding Assy Kit", "Cladding Assy Kit Description"),
+    "Finish Kits": ("Finish Kit", "Finish Kit Description") # Added this
+}
+
+# Create a "Sub-Assemblies" mode for parts not in the SKU list
+nav_mode = st.sidebar.radio("Select Level", ["Top Level (SKU List)", "Sub-Assemblies (All Parents)"])
+
+if nav_mode == "Top Level (SKU List)":
+    view = st.selectbox("Category", [k for k in cat_config.keys() if cat_config[k][0] in available_cols])
+    id_f, desc_f = cat_config[view]
+    options = []
+    subset = df_s[df_s[id_f].notna() & (df_s[id_f] != "")]
+    for _, r in subset.drop_duplicates(subset=[id_f]).iterrows():
+        options.append(f"{r[id_f]} | {r.get(desc_f, 'N/A')}")
+    choice = st.selectbox(f"Select {view}", ["-- Select --"] + sorted(options))
+else:
+    # Allows viewing BOMs for items that aren't "Saleable" (Sub-assemblies)
+    all_parents = sorted(list(bom_tree.keys()))
+    choice = st.selectbox("Select Any Sub-Assembly ID", ["-- Select --"] + all_parents)
+
+# --- 4. ENGINE & OUTPUT ---
+if choice != "-- Select --":
+    sel_id = choice.split(" | ")[0].strip()
+    # Find description from Master if not in SKU list
+    sel_desc = choice.split(" | ")[1].strip() if " | " in choice else master_map.get(sel_id, {}).get('Part Description', 'Unknown Sub-Assembly')
+
+    results = []
+    def explode(pid, depth=1, mult=1):
+        if depth > 10: return
+        for item in bom_tree.get(pid, []):
+            cid = item['c']
+            total = mult * item['q']
+            meta = master_lookup = master_map.get(cid, {})
+            results.append({
+                'Level': depth, 'Part No.': cid, 
+                'Description': meta.get('Part Description', 'N/A'),
+                'Qty': item['q'], 'Total Req': total, 'UOM': item['u'],
+                'Unit Cost': meta.get('Math_Cost', 0.0),
+                'Ext. Cost': meta.get('Math_Cost', 0.0) * total
+            })
+            explode(cid, depth + 1, total)
+
+    explode(sel_id)
+
+    if results:
+        df_res = pd.DataFrame(results)
+        st.metric("Total Roll-up Cost", f"${df_res['Ext. Cost'].sum():,.2f}")
         
-        def explode(parent_id, depth=1, current_mult=1):
-            if depth > 12: return # Safety break
-            
-            components = bom_tree.get(parent_id, [])
-            for comp in components:
-                cid = comp['child_id']
-                total_req = current_mult * comp['qty_per']
-                meta = master_dict.get(cid, {})
-                
-                exploded_data.append({
-                    'Level': depth,
-                    'Parent': parent_id,
-                    'Part No.': cid,
-                    'Description': meta.get('Part Description', 'N/A'),
-                    'Category': meta.get('Category', 'N/A'),
-                    'Qty Per': comp['qty_per'],
-                    'Total Req': total_req,
-                    'UOM': comp['uom'],
-                    'Unit Cost': meta.get('Clean_Price', 0.0),
-                    'Ext. Cost': meta.get('Clean_Price', 0.0) * total_req
-                })
-                # Check if this child is also a parent
-                explode(cid, depth + 1, total_req)
+        # Display Table
+        disp = df_res.copy()
+        disp['Unit Cost'] = disp['Unit Cost'].map("${:,.2f}".format)
+        disp['Ext. Cost'] = disp['Ext. Cost'].map("${:,.2f}".format)
+        st.dataframe(disp, use_container_width=True, hide_index=True)
 
-        explode(sel_id)
-
-        # --- 6. DISPLAY RESULTS ---
-        if exploded_data:
-            res_df = pd.DataFrame(exploded_data)
-            
-            st.metric("Total Roll-up Cost", f"${res_df['Ext. Cost'].sum():,.2f}")
-
-            disp_df = res_df.copy()
-            disp_df['Unit Cost'] = disp_df['Unit Cost'].map("${:,.2f}".format)
-            disp_df['Ext. Cost'] = disp_df['Ext. Cost'].map("${:,.2f}".format)
-            st.dataframe(disp_df, use_container_width=True, hide_index=True)
-
-            csv_buffer = f"BOM REPORT\nTarget: {sel_id}\n\n" + res_df.to_csv(index=False)
-            st.download_button("📥 Download This BOM", csv_buffer.encode('utf-8-sig'), f"BOM_{sel_id}.csv")
-        else:
-            st.warning(f"No components found for '{sel_id}' in the BOM Links file.")
-
-except Exception as e:
-    st.error(f"Critical Error: {e}")
+        # 3) FIXED CSV HEADER (Name then Number)
+        csv_header = f"ASSEMBLY NAME: {sel_desc}\nASSEMBLY NUMBER: {sel_id}\n\n"
+        csv_body = df_res.to_csv(index=False)
+        st.download_button("📥 Download CSV", (csv_header + csv_body).encode('utf-8-sig'), f"BOM_{sel_id}.csv")
+    else:
+        st.warning(f"No components found for {sel_id}.")
