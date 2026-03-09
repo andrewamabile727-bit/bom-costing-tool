@@ -3,7 +3,7 @@ import pandas as pd
 import re
 import os
 
-st.set_page_config(page_title="BOM Pro v9.1", layout="wide")
+st.set_page_config(page_title="BOM Pro v9.2", layout="wide")
 
 # --- 1. PERFORMANCE CACHE (Keeps the app fast) ---
 @st.cache_data(ttl=3600)
@@ -18,7 +18,7 @@ def load_and_prep_data():
     if not all([f_m, f_l, f_s]):
         return None, None, None
 
-    # Load & Strip spaces
+    # Load & Strip spaces from data
     df_m = pd.read_csv(f_m, encoding='utf-8-sig').apply(lambda x: x.str.strip() if x.dtype == "object" else x)
     df_l = pd.read_csv(f_l, encoding='utf-8-sig').apply(lambda x: x.str.strip() if x.dtype == "object" else x)
     df_s = pd.read_csv(f_s, encoding='utf-8-sig').apply(lambda x: x.str.strip() if x.dtype == "object" else x)
@@ -38,7 +38,7 @@ def load_and_prep_data():
 df_m, df_l, df_s = load_and_prep_data()
 
 if df_m is None:
-    st.error("🚨 Missing core CSV files in your GitHub repository.")
+    st.error("🚨 Missing core CSV files. Check your GitHub repository.")
     st.stop()
 
 # Maps for fast lookup
@@ -54,10 +54,10 @@ for _, row in df_l.iterrows():
     })
 
 # --- 3. NAVIGATION LOGIC ---
-st.sidebar.header("Configuration")
-nav_type = st.sidebar.radio("View Depth", ["Top Level (SKU List)", "Sub-Assemblies (Deep Dive)"])
+st.sidebar.header("Navigation")
+nav_type = st.sidebar.radio("View Depth", ["Top Level (SKU List)", "Sub-Assemblies (All Parents)"])
 
-# Define Categories and check if they exist in the file
+# Define Categories
 cols = df_s.columns.tolist()
 cat_map = {
     "Saleable SKUs": ("Saleable Sku", "Saleable Sku Description"),
@@ -68,12 +68,10 @@ cat_map = {
 }
 
 if nav_type == "Top Level (SKU List)":
-    # Filter only available categories
     available_cats = [k for k, v in cat_map.items() if v[0] in cols]
     mode = st.selectbox("Category", available_cats)
     id_col, desc_col = cat_map[mode]
     
-    # Generate Dropdown with Name | Number
     options = []
     valid_rows = df_s[df_s[id_col].notna() & (df_s[id_col] != "")]
     for _, r in valid_rows.drop_duplicates(subset=[id_col]).iterrows():
@@ -81,10 +79,10 @@ if nav_type == "Top Level (SKU List)":
     selection = st.selectbox(f"Select {mode}", ["-- Select --"] + sorted(options))
 
 else:
-    # 1) FIXED: Sub-Assemblies now show Name and Number
+    # Sub-Assemblies dropdown showing Number | Name
     sub_options = []
     for p_id in sorted(bom_tree.keys()):
-        p_desc = master_map.get(p_id, {}).get('Part Description', 'Description Not in Master')
+        p_desc = master_map.get(p_id, {}).get('Part Description', 'N/A')
         sub_options.append(f"{p_id} | {p_desc}")
     selection = st.selectbox("Select Sub-Assembly", ["-- Select --"] + sub_options)
 
@@ -124,9 +122,10 @@ if selection != "-- Select --":
         disp['Ext. Cost'] = disp['Ext. Cost'].map("${:,.2f}".format)
         st.dataframe(disp, use_container_width=True, hide_index=True)
         
-        # 3) CSV HEADER: Name then Number
-        csv_header = f"ASSEMBLY NAME: {sel_name}\nASSEMBLY NUMBER: {sel_id}\n\n"
+        # 3) FIXED CSV HEADER (Single cell: Name, Number)
+        # Wrapping in quotes keeps the Name and Number in Cell A1
+        csv_header = f'"{sel_name}, {sel_id}"\n\n'
         csv_body = res_df.to_csv(index=False)
         st.download_button("📥 Download CSV", (csv_header + csv_body).encode('utf-8-sig'), f"BOM_{sel_id}.csv")
     else:
-        st.warning(f"No components found for {sel_id}. Ensure it is listed as a 'Parent' in BOM Links.")
+        st.warning(f"No components found for {sel_id}.")
