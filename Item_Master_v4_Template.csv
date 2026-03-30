@@ -37,7 +37,6 @@ S26496,"Back Sheath, Accessory Kit D (Beacon)",Buy,Ext. Cabinet Sheathing (S),$0
 S47899,"Top Sheath w/o Sink/Ice Bin, 24in wd. Low Module",Buy,Ext. Cabinet Sheathing (S),$21.31 ,MTO,HDC
 S76940,"Top Sheath with Sink/Ice Bin, 24in wd. Low Module",Buy,Ext. Cabinet Sheathing (S),$25.00 ,MTO,HDC
 S52166,"Bottom Sheath, 24in wd. Low Module",Buy,Ext. Cabinet Sheathing (S),$21.89 ,MTO,HDC
-S41502,"Side Sheath, 24in wd. Low Module",Buy,Ext. Cabinet Sheathing (S),$26.38 ,MTO,HDC
 S90669,"Back Sheath, 24in wd. Low Module, Accessory Kit A (No Accessory)",Buy,Ext. Cabinet Sheathing (S),$31.35 ,MTO,HDC
 S39496,"Top Sheath w/o Sink/Ice Bin, 32in wd. High Module",Buy,Ext. Cabinet Sheathing (S),$21.31 ,MTO,HDC
 S68537,"Top Sheath with Sink/Ice Bin, 32in wd. High Module",Buy,Ext. Cabinet Sheathing (S),$25.00 ,MTO,HDC
@@ -374,10 +373,10 @@ K63335,"59L (2.1CuFt) Refrigerator, Summit SPR314LOS",Buy,Appliance (Frefrigerat
 K23498,"All Right 25"" LP Grill",Buy,Appliance (Cooking), $-   ,BTO,"Wuxi Allright Metal Products Co., Ltd."
 K23499,"All Right 32"" LP Grill",Buy,Appliance (Cooking), $-   ,BTO,"Wuxi Allright Metal Products Co., Ltd."
 K23500,Electric Grill Model EG Home S,Buy,Appliance (Cooking), $-   ,BTO,Okpiro 
-K79313,"Slotted Unthreaded Spacers, 21/64"" OD, 3/4"" Long",,Hardware Specialty, $0.44 ,OTS,McMaster Carr
-K39639,"Aluminum Female Threaded Hex Standoff, 1/4-20 x 1/2"" L",,Hardware Fastener, $4.81 ,OTS,McMaster Carr
-K79314,"Locating Pin, 18-8 Stainless Steel, 1"" L x 1/4-20 Thread",,Hardware Specialty, $8.95 ,OTS,McMaster Carr
-K79315,"Stainless Steel Unthreaded Spacer, 1/2"" OD x 1/4"" L, #10 Screw Size",,Hardware Specialty, $3.84 ,OTS,McMaster Carr
+K79313,"Slotted Unthreaded Spacers, 21/64"" OD, 3/4"" Long",,Hardware Specialty,$0.44 ,OTS,McMaster Carr
+K39639,"Aluminum Female Threaded Hex Standoff, 1/4-20 x 1/2"" L",,Hardware Fastener,$4.81 ,OTS,McMaster Carr
+K79314,"Locating Pin, 18-8 Stainless Steel, 1"" L x 1/4-20 Thread",,Hardware Specialty,$8.95 ,OTS,McMaster Carr
+K79315,"Stainless Steel Unthreaded Spacer, 1/2"" OD x 1/4"" L, #10 Screw Size",,Hardware Specialty,$3.84 ,OTS,McMaster Carr
 K39536,"10-32 Flat Head Phillips Head Screw, 7/16"" Long, SS, Undercut",Buy,Hardware Fastener,$0.14 ,OTS,McMaster Carr
 K39534,"Press-Fit Nut for Sheet Metal, 1/4""-20, for 0.047"" Minimum Panel Thickness",Buy,Hardware Fastener,$0.43 ,OTS,McMaster Carr
 K39580,"Press-Fit Nut for Sheet Metal, 8-32, for 0.040"" Minimum Panel Thickness",Buy,Hardware Fastener,$0.19 ,OTS,McMaster Carr
